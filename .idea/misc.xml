@@ -1,0 +1,21 @@
+<project version="4">
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="KubernetesApiProvider">{}</component>
+  <component name="MavenProjectsManager">
+    <option name="originalFiles">
+      <list>
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/mars-infra/mars-crypto/pom.xml" />
+        <option value="$PROJECT_DIR$/mars-core/mars-test/pom.xml" />
+        <option value="$PROJECT_DIR$/mars-core/mars-biz/pom.xml" />
+      </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/mars-core/mars-mall/pom.xml" />
+        <option value="$PROJECT_DIR$/mars-core/mars-test/pom.xml" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="17" project-jdk-type="JavaSDK" />
+</project>

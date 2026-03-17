@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.mars</groupId>
+        <artifactId>mars-api</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>mars-admin-api</artifactId>
+    <packaging>jar</packaging>
+    <name>Mars Admin API</name>
+    <description>后台管理接口层 - Admin控制器</description>
+
+    <dependencies>
+        <!-- 认证模块 -->
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-auth</artifactId>
+        </dependency>
+        <!-- 业务模块 -->
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-system</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-crypto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-file</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-gen</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-biz</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-message</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-pay</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-sms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-job</artifactId>
+        </dependency>
+
+        <!-- WebSocket基础设施 -->
+        <dependency>
+            <groupId>com.mars</groupId>
+            <artifactId>mars-websocket</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+    </dependencies>
+</project>
