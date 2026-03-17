@@ -8,16 +8,16 @@
     <artifactId>mars-admin</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>Mars Admin</name>
+    <name>QC Admin</name>
     <description>通用管理系统 - RBAC权限管理</description>
 
     <modules>
-        <module>mars-common</module>
-        <module>mars-infra</module>
-        <module>mars-core</module>
-        <module>mars-api</module>
-        <module>mars-job</module>
-        <module>mars-starter</module>
+        <module>qc-common</module>
+        <module>qc-infra</module>
+        <module>qc-core</module>
+        <module>qc-api</module>
+        <module>qc-job</module>
+        <module>qc-starter</module>
     </modules>
 
     <properties>
@@ -96,121 +96,121 @@
             <!-- 公共基础 -->
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-common</artifactId>
+                <artifactId>qc-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <!-- 基础设施层 -->
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-db</artifactId>
+                <artifactId>qc-db</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-redis</artifactId>
+                <artifactId>qc-redis</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-oss</artifactId>
+                <artifactId>qc-oss</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-websocket</artifactId>
+                <artifactId>qc-websocket</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-sms</artifactId>
+                <artifactId>qc-sms</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-push</artifactId>
+                <artifactId>qc-push</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-wechat</artifactId>
+                <artifactId>qc-wechat</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-social</artifactId>
+                <artifactId>qc-social</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-crypto</artifactId>
+                <artifactId>qc-crypto</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-mail</artifactId>
+                <artifactId>qc-mail</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <!-- 业务核心层 -->
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-system</artifactId>
+                <artifactId>qc-system</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-file</artifactId>
+                <artifactId>qc-file</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-gen</artifactId>
+                <artifactId>qc-gen</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-biz</artifactId>
+                <artifactId>qc-biz</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-message</artifactId>
+                <artifactId>qc-message</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-pay</artifactId>
+                <artifactId>qc-pay</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <!-- 接口层 -->
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-admin-api</artifactId>
+                <artifactId>qc-admin-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-app-api</artifactId>
+                <artifactId>qc-app-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-web-api</artifactId>
+                <artifactId>qc-web-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-auth</artifactId>
+                <artifactId>qc-auth</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <!-- 定时任务 -->
             <dependency>
                 <groupId>com.mars</groupId>
-                <artifactId>mars-job</artifactId>
+                <artifactId>qc-job</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

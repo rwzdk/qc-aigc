@@ -7,29 +7,30 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="mars-auth" />
-        <module name="mars-crypto" />
-        <module name="mars-wechat" />
-        <module name="mars-web-api" />
-        <module name="mars-redis" />
-        <module name="mars-websocket" />
-        <module name="mars-mail" />
-        <module name="mars-job" />
-        <module name="mars-starter" />
-        <module name="mars-system" />
-        <module name="mars-sms" />
-        <module name="mars-common" />
-        <module name="mars-social" />
-        <module name="mars-message" />
-        <module name="mars-admin-api" />
-        <module name="mars-biz" />
-        <module name="mars-push" />
-        <module name="mars-file" />
-        <module name="mars-gen" />
-        <module name="mars-oss" />
-        <module name="mars-app-api" />
-        <module name="mars-db" />
-        <module name="mars-pay" />
+        <module name="qc-app-api" />
+        <module name="qc-social" />
+        <module name="qc-sms" />
+        <module name="qc-biz" />
+        <module name="qc-common" />
+        <module name="qc-aigc" />
+        <module name="qc-oss" />
+        <module name="qc-gen" />
+        <module name="qc-push" />
+        <module name="qc-crypto" />
+        <module name="qc-message" />
+        <module name="qc-file" />
+        <module name="qc-redis" />
+        <module name="qc-mail" />
+        <module name="qc-wechat" />
+        <module name="qc-pay" />
+        <module name="qc-auth" />
+        <module name="qc-system" />
+        <module name="qc-starter" />
+        <module name="qc-web-api" />
+        <module name="qc-websocket" />
+        <module name="qc-job" />
+        <module name="qc-admin-api" />
+        <module name="qc-db" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -41,35 +42,36 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="mars-admin" options="-parameters" />
-      <module name="mars-admin-api" options="-parameters" />
-      <module name="mars-api" options="-parameters" />
-      <module name="mars-app-api" options="-parameters" />
-      <module name="mars-auth" options="-parameters" />
-      <module name="mars-biz" options="-parameters" />
-      <module name="mars-common" options="-parameters" />
-      <module name="mars-core" options="-parameters" />
-      <module name="mars-crypto" options="-parameters" />
-      <module name="mars-db" options="-parameters" />
-      <module name="mars-file" options="-parameters" />
-      <module name="mars-gen" options="-parameters" />
-      <module name="mars-infra" options="-parameters" />
-      <module name="mars-job" options="-parameters" />
-      <module name="mars-mail" options="-parameters" />
       <module name="mars-mall" options="-parameters" />
-      <module name="mars-message" options="-parameters" />
-      <module name="mars-oss" options="-parameters" />
-      <module name="mars-pay" options="-parameters" />
-      <module name="mars-push" options="-parameters" />
-      <module name="mars-redis" options="-parameters" />
-      <module name="mars-sms" options="-parameters" />
-      <module name="mars-social" options="-parameters" />
-      <module name="mars-starter" options="-parameters" />
-      <module name="mars-system" options="-parameters" />
       <module name="mars-test" options="-parameters" />
       <module name="mars-web" options="-parameters" />
-      <module name="mars-web-api" options="-parameters" />
-      <module name="mars-websocket" options="-parameters" />
-      <module name="mars-wechat" options="-parameters" />
+      <module name="qc-admin-api" options="-parameters" />
+      <module name="qc-aigc" options="-parameters" />
+      <module name="qc-api" options="-parameters" />
+      <module name="qc-app-api" options="-parameters" />
+      <module name="qc-auth" options="-parameters" />
+      <module name="qc-biz" options="-parameters" />
+      <module name="qc-common" options="-parameters" />
+      <module name="qc-core" options="-parameters" />
+      <module name="qc-crypto" options="-parameters" />
+      <module name="qc-db" options="-parameters" />
+      <module name="qc-file" options="-parameters" />
+      <module name="qc-gen" options="-parameters" />
+      <module name="qc-infra" options="-parameters" />
+      <module name="qc-job" options="-parameters" />
+      <module name="qc-mail" options="-parameters" />
+      <module name="qc-message" options="-parameters" />
+      <module name="qc-oss" options="-parameters" />
+      <module name="qc-pay" options="-parameters" />
+      <module name="qc-push" options="-parameters" />
+      <module name="qc-redis" options="-parameters" />
+      <module name="qc-sms" options="-parameters" />
+      <module name="qc-social" options="-parameters" />
+      <module name="qc-starter" options="-parameters" />
+      <module name="qc-system" options="-parameters" />
+      <module name="qc-web-api" options="-parameters" />
+      <module name="qc-websocket" options="-parameters" />
+      <module name="qc-wechat" options="-parameters" />
     </option>
   </component>
 </project>

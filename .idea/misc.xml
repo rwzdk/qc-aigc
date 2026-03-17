@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="KubernetesApiProvider">{}</component>
+  <component name="KubernetesApiProvider"><![CDATA[{}]]></component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
@@ -8,6 +9,8 @@
         <option value="$PROJECT_DIR$/mars-infra/mars-crypto/pom.xml" />
         <option value="$PROJECT_DIR$/mars-core/mars-test/pom.xml" />
         <option value="$PROJECT_DIR$/mars-core/mars-biz/pom.xml" />
+        <option value="$PROJECT_DIR$/springAI/pom.xml" />
+        <option value="$PROJECT_DIR$/qc-aigc/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

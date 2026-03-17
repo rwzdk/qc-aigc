@@ -1,0 +1,68 @@
+
+server:
+  port: 8081
+spring:
+  application:
+    name: springAI
+    #运行的ollama默认运行地址,和运行模型
+   #springboot自动加载,并且生成ollamachatmodel,注入到spring容器中
+  ai:
+    ollama:
+      base-url: http://localhost:11434 # 指定Ollama服务地址
+      chat:
+        model: deepseek-r1:7b
+        options:
+          temperature: 0.8
+    openai:
+      base-url: https://dashscope.aliyuncs.com/compatible-mode
+      api-key: ${OPENAI_API_KEY}  #将apikey保存在项目的环境变量中
+      chat:
+        options:
+          model: qwen-max-latest
+      embedding:
+        options:
+          model: text-embedding-v3
+          dimensions: 1024
+    vectorstore:
+      redis:
+        index: 1
+        initialize-schema: true
+        prefix: "qc"
+  servlet:
+    multipart:
+      max-file-size: 104857600
+      max-request-size: 104857600
+  datasource:
+    password: 123456
+    username: root
+    url: jdbc:mysql://localhost:3306/itheima?serverTimezone=Asia/Shanghai&useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&tinyInt1isBit=false&allowPublicKeyRetrieval=true&allowMultiQueries=true&useServerPrepStmts=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      password: 123456
+      database: 1
+      redisson:
+        config: |
+          singleServerConfig:
+            address: "redis://localhost:6379"
+            password: "123456"
+            database: 1
+            timeout: 3000
+            connectionMinimumIdleSize: 1
+            idleConnectionTimeout: 10000
+            connectTimeout: 10000
+            retryAttempts: 3
+            retryInterval: 1500
+  mybatis-plus:
+    global-config:
+      db-config:
+        logic-delete-field: flag
+        logic-delete-value: 1
+        logic-not-delete-value: 0
+logging:
+  level:
+    org.springframework.ai.chat.client.advisor: debug
+    com.qc: debug
+
