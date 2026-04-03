@@ -1,0 +1,8 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: qc-audio
+  ai:
+    dashscope:
+      api-key: sk-0be8343135b24c6e85cd5907f65fdb7c

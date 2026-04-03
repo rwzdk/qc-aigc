@@ -19,13 +19,13 @@
         <module name="qc-websocket" />
         <module name="qc-job" />
         <module name="qc-admin-api" />
+        <module name="qc-audio" />
         <module name="qc-app-api" />
         <module name="qc-aigc" />
         <module name="qc-crypto" />
         <module name="qc-message" />
         <module name="qc-file" />
         <module name="qc-redis" />
-        <module name="dashscope-audio (1)" />
         <module name="qc-mail" />
         <module name="qc-pay" />
         <module name="qc-auth" />
@@ -36,10 +36,11 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="dashscope-audio" target="17" />
+      <module name="dashscope-audio (1)" target="17" />
       <module name="mars-mall" target="17" />
       <module name="mars-test" target="17" />
       <module name="mars-web" target="17" />
-      <module name="qc-audio" target="17" />
+      <module name="spring-ai-alibaba-audio-example" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

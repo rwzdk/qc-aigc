@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.ai.example.audio.stt;
+package com.qc.audio.audio.stt;
 
-import com.alibaba.cloud.ai.example.audio.service.SstService;
+import com.qc.audio.audio.service.SstService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

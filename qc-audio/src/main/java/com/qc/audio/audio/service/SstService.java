@@ -1,4 +1,4 @@
-package com.alibaba.cloud.ai.example.audio.service;
+package com.qc.audio.audio.service;
 
 public interface SstService {
     String sst(String model,

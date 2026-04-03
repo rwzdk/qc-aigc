@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.alibaba.cloud.ai.example.audio.tts;
+package com.qc.audio.audio.tts;
 
 /**
  * TTSController 用于处理文字转语音(TTS)相关功能。

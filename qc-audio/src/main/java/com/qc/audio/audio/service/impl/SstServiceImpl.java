@@ -1,6 +1,6 @@
-package com.alibaba.cloud.ai.example.audio.service.impl;
+package com.qc.audio.audio.service.impl;
 
-import com.alibaba.cloud.ai.example.audio.service.SstService;
+import com.qc.audio.audio.service.SstService;
 import com.alibaba.dashscope.audio.asr.recognition.Recognition;
 import com.alibaba.dashscope.audio.asr.recognition.RecognitionParam;
 import java.io.File;
