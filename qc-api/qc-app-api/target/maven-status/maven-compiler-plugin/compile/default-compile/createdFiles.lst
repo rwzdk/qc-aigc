@@ -1,0 +1,4 @@
+com\qc\app\controller\AppAuthController.class
+com\qc\app\controller\AppAuthController$SmsCodeRequest.class
+com\qc\app\controller\AppAuthController$PasswordRequest.class
+com\qc\app\controller\AppAuthController$ProfileRequest.class

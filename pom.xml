@@ -4,13 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+   <!--设计pom文件父工程,管理共同依赖-->
     <groupId>com.mars</groupId>
     <artifactId>mars-admin</artifactId>
     <version>1.0.0</version>
+   <!--标注打包方式为pom,该模块不写代码,只做依赖管理-->
     <packaging>pom</packaging>
     <name>QC Admin</name>
     <description>通用管理系统 - RBAC权限管理</description>
 
+    <!--聚合,指定要聚合哪些模块-->
     <modules>
         <module>qc-common</module>
         <module>qc-infra</module>
@@ -33,7 +36,8 @@
         <druid.version>1.2.23</druid.version>
         <lombok.version>1.18.30</lombok.version>
     </properties>
-
+    <!--父工程进行版本锁定,进行版本的统一管理-->
+    <!--子工程只需引入依赖不需要指定版本号-->
     <dependencyManagement>
         <dependencies>
             <!-- Spring Boot -->

@@ -11,12 +11,14 @@
         <option value="$PROJECT_DIR$/mars-core/mars-biz/pom.xml" />
         <option value="$PROJECT_DIR$/springAI/pom.xml" />
         <option value="$PROJECT_DIR$/qc-aigc/pom.xml" />
+        <option value="$PROJECT_DIR$/spring-ai-alibaba-audio-example/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/mars-core/mars-mall/pom.xml" />
         <option value="$PROJECT_DIR$/mars-core/mars-test/pom.xml" />
+        <option value="$PROJECT_DIR$/qc-audio/pom.xml" />
       </set>
     </option>
   </component>

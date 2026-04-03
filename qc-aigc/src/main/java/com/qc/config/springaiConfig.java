@@ -55,7 +55,7 @@ public class springaiConfig {
                 .defaultAdvisors(
                         new SimpleLoggerAdvisor(),
                         new MessageChatMemoryAdvisor(chatMemory)
-                                )//类似切面可以用来拦截和增强请求/响应
+                )//类似切面可以用来拦截和增强请求/响应
                 .build();
     }
 
@@ -97,7 +97,7 @@ public class springaiConfig {
                         new SimpleLoggerAdvisor(),
                         new QuestionAnswerAdvisor(vectorStore,
                                 SearchRequest.builder().similarityThreshold(0.5d).topK(2).build()
-                          )
+                        )
                 ).build();
     }
 

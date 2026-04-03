@@ -10,7 +10,6 @@ com\qc\entity\vo\MessageVO$1.class
 com\qc\repository\LocalPdfFileRepository.class
 com\qc\service\impl\CourseReservationServiceImpl.class
 com\qc\tools\CourseTools.class
-com\qc\models\AlibabaOpenAiChatModel.class
 com\qc\service\ICourseService.class
 com\qc\service\impl\SchoolServiceImpl.class
 com\qc\entity\query\CourseQuery$Sort.class
@@ -30,5 +29,4 @@ com\qc\entity\po\CourseReservation.class
 com\qc\util\VectorDistanceUtils.class
 com\qc\controller\ChatHistoryController.class
 com\qc\constants\SystemConstants.class
-com\qc\models\AlibabaOpenAiChatModel$Builder.class
 com\qc\service\ISchoolService.class

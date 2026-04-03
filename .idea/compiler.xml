@@ -7,40 +7,45 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="qc-app-api" />
         <module name="qc-social" />
         <module name="qc-sms" />
         <module name="qc-biz" />
         <module name="qc-common" />
-        <module name="qc-aigc" />
         <module name="qc-oss" />
         <module name="qc-gen" />
         <module name="qc-push" />
+        <module name="qc-wechat" />
+        <module name="qc-system" />
+        <module name="qc-websocket" />
+        <module name="qc-job" />
+        <module name="qc-admin-api" />
+        <module name="qc-app-api" />
+        <module name="qc-aigc" />
         <module name="qc-crypto" />
         <module name="qc-message" />
         <module name="qc-file" />
         <module name="qc-redis" />
+        <module name="dashscope-audio (1)" />
         <module name="qc-mail" />
-        <module name="qc-wechat" />
         <module name="qc-pay" />
         <module name="qc-auth" />
-        <module name="qc-system" />
         <module name="qc-starter" />
         <module name="qc-web-api" />
-        <module name="qc-websocket" />
-        <module name="qc-job" />
-        <module name="qc-admin-api" />
         <module name="qc-db" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="dashscope-audio" target="17" />
       <module name="mars-mall" target="17" />
       <module name="mars-test" target="17" />
       <module name="mars-web" target="17" />
+      <module name="qc-audio" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="dashscope-audio" options="-parameters" />
+      <module name="dashscope-audio (1)" options="-parameters" />
       <module name="mars-admin" options="-parameters" />
       <module name="mars-mall" options="-parameters" />
       <module name="mars-test" options="-parameters" />
@@ -49,6 +54,7 @@
       <module name="qc-aigc" options="-parameters" />
       <module name="qc-api" options="-parameters" />
       <module name="qc-app-api" options="-parameters" />
+      <module name="qc-audio" options="-parameters" />
       <module name="qc-auth" options="-parameters" />
       <module name="qc-biz" options="-parameters" />
       <module name="qc-common" options="-parameters" />
@@ -72,6 +78,7 @@
       <module name="qc-web-api" options="-parameters" />
       <module name="qc-websocket" options="-parameters" />
       <module name="qc-wechat" options="-parameters" />
+      <module name="spring-ai-alibaba-audio-example" options="-parameters" />
     </option>
   </component>
 </project>

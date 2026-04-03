@@ -5,7 +5,7 @@ spring:
   application:
     name: springAI
     #运行的ollama默认运行地址,和运行模型
-   #springboot自动加载,并且生成ollamachatmodel,注入到spring容器中
+    #springboot自动加载,并且生成ollamachatmodel,注入到spring容器中
   ai:
     ollama:
       base-url: http://localhost:11434 # 指定Ollama服务地址

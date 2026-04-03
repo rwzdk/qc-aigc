@@ -18,6 +18,10 @@
     <file url="file://$PROJECT_DIR$/qc-api/qc-web-api/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qc-api/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qc-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/qc-audio/dashscope-audio/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/qc-audio/dashscope-audio/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/qc-audio/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/qc-audio/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qc-common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qc-common/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qc-core/mars-mall/src/main/java" charset="UTF-8" />
@@ -68,6 +72,10 @@
     <file url="file://$PROJECT_DIR$/qc-job/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qc-starter/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/qc-starter/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-ai-alibaba-audio-example/dashscope-audio/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-ai-alibaba-audio-example/dashscope-audio/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-ai-alibaba-audio-example/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/spring-ai-alibaba-audio-example/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/springAI/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />

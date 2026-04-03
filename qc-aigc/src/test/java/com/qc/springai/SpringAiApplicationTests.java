@@ -3,8 +3,8 @@ package com.qc.springai;
 import com.qc.util.VectorDistanceUtils;
 import org.apache.tomcat.util.net.openssl.OpenSSLUtil;
 import org.junit.jupiter.api.Test;
+import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.openai.OpenAiEmbeddingModel;
 import org.springframework.ai.reader.ExtractedTextFormatter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
@@ -22,7 +22,7 @@ import java.util.List;
 @SpringBootTest
 class SpringAiApplicationTests {
     @Autowired
-    private OpenAiEmbeddingModel embeddingModel;
+    private EmbeddingModel embeddingModel;
     @Autowired
     private VectorStore vectorStore;
   @Test
