@@ -80,6 +80,12 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-pdf-document-reader</artifactId>
         </dependency>
+        <!-- OkHttp 流式请求核心依赖 -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.12.0</version>
+        </dependency>
     </dependencies>
     <!-- 先在 dependencyManagement 中导入 BOM，声明版本 -->
     <!-- 实际引入依赖时，无需写版本号，自动使用 BOM 中的版本 -->

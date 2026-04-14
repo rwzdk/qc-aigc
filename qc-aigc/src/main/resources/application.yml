@@ -65,4 +65,11 @@ logging:
   level:
     org.springframework.ai.chat.client.advisor: debug
     com.qc: debug
+coze:
+  api:
+    url: "https://api.coze.cn/v3/chat"
+  auth:
+    token: "pat_8QdcoxB7WKaWz7NvET4F1SwAbkPtuvPXhgSKJtV1AMDb48hKGWD0U21gcsYassXy"
+  bot:
+    id: "7627828198931873801"
 

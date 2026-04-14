@@ -1,9 +1,10 @@
+E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\config\OkHttpConfig.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\config\springaiConfig.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\config\WebMvcConfiguration.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\constants\SystemConstants.java
-E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\controller\AudioController.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\controller\ChatController.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\controller\ChatHistoryController.java
+E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\controller\CozeChatController.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\controller\CustomerServiceController.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\controller\GameController.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\controller\PdfController.java
@@ -21,12 +22,12 @@ E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\repository\ChatHistoryReposit
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\repository\FileRepository.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\repository\InMemoryChatHistoryRepository.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\repository\LocalPdfFileRepository.java
-E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\AudioService.java
+E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\CozeChatService.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\ICourseReservationService.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\ICourseService.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\impl\CourseReservationServiceImpl.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\impl\CourseServiceImpl.java
-E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\impl\OpenAIAudioServiceImpl.java
+E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\impl\CozeChatServiceImpl.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\impl\SchoolServiceImpl.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\service\ISchoolService.java
 E:\projects\bskf\back\qc-aigc\src\main\java\com\qc\tools\CourseTools.java
