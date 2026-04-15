@@ -8,21 +8,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class CozeChatServiceImpl implements CozeChatService {
-    // Coze 配置（建议放到 application.yml）
+    // Coze 配置
     @Value("${coze.api.url:https://api.coze.cn/v3/chat}")
-    private String COZE_API_URL;
+    private String COZE_CHAT_API_URL;
+
+    @Value("${coze.api.upload.url:https://api.coze.cn/v1/files/upload}")
+    private String COZE_UPLOAD_URL;
 
     @Value("${coze.auth.token:pat_8QdcoxB7WKaWz7NvET4F1SwAbkPtuvPXhgSKJtV1AMDb48hKGWD0U21gcsYassXy}")
     private String AUTH_TOKEN;
@@ -34,372 +37,398 @@ public class CozeChatServiceImpl implements CozeChatService {
     private static final Logger log = LoggerFactory.getLogger(CozeChatServiceImpl.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public CozeChatServiceImpl(OkHttpClient okHttpClient) {
-        this.okHttpClient = okHttpClient;
+    // 会话缓存
+    private final Map<String, String> USER_CONVERSATION_CACHE = new ConcurrentHashMap<>();
+
+    public CozeChatServiceImpl() {
+        // 【核心修复1】配置超稳定的 OkHttpClient
+        this.okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)      // 连接超时1分钟
+                .readTimeout(300, TimeUnit.SECONDS)        // 【关键】读超时5分钟，彻底解决AI生成超时
+                .writeTimeout(60, TimeUnit.SECONDS)         // 写入超时1分钟
+                .callTimeout(300, TimeUnit.SECONDS)         // 整个调用超时5分钟
+                .retryOnConnectionFailure(true)              // 连接失败自动重试
+                .connectionPool(new ConnectionPool(5, 5, TimeUnit.MINUTES)) // 连接池保活
+                .protocols(Arrays.asList(Protocol.HTTP_1_1)) // 【核心修复2】强制只用HTTP/1.1，彻底解决HTTP/2流重置
+                .build();
     }
 
-    /**
-     * 从 Coze 返回的 data 字符串中解析并提取 content 字段的文本内容（支持多种碎片情况），
-     * 返回合并后的纯文本（用空格分隔片段）。
-     */
-    private String extractContentFromJson(String data) {
-        if (data == null || data.isEmpty()) return null;
-        StringBuilder sb = new StringBuilder();
-        // 有时 data 中会包含多行 JSON 或多个 JSON 串联，用换行拆分
-        String[] parts = data.split("\\r?\\n");
-        Pattern p = Pattern.compile("\"content\"\\s*:\\s*\"(.*?)\"", Pattern.DOTALL);
-        for (String part : parts) {
-            if (part == null) continue;
-            String trimmed = part.trim();
-            if (trimmed.isEmpty()) continue;
-            try {
-                JsonNode node = objectMapper.readTree(trimmed);
-                JsonNode contentNode = node.path("content");
-                if (!contentNode.isMissingNode()) {
-                    String text = contentNode.asText();
-                    if (text != null && !text.isEmpty()) {
-                        if (sb.length() > 0) sb.append(' ');
-                        sb.append(text);
-                    }
-                    continue;
-                }
-            } catch (Exception ignore) {
-                // 可能不是完整 JSON，使用正则提取 content
-            }
-
-            Matcher m = p.matcher(trimmed);
-            while (m.find()) {
-                String group = m.group(1);
-                if (group == null || group.isEmpty()) continue;
-                String unescaped = group;
-                try {
-                    // 通过 ObjectMapper 解析 JSON 字符串以还原转义字符
-                    String wrapper = '"' + group.replace("\"", "\\\"") + '"';
-                    unescaped = objectMapper.readValue(wrapper, String.class);
-                } catch (Exception ex) {
-                    // fallback: 使用原始捕获
-                    unescaped = group.replace("\\\"", "\"");
-                }
-                if (!unescaped.isEmpty()) {
-                    if (sb.length() > 0) sb.append(' ');
-                    sb.append(unescaped);
-                }
-            }
-        }
-        return sb.toString();
-    }
-
-    private String extractAnswerDelta(String data) {
-        return extractTextByCandidateKeys(data, List.of("content"));
-    }
-
-    private String extractThinkingDelta(String data) {
-        return extractTextByCandidateKeys(data, List.of("reasoning_content", "thinking_content"));
-    }
-
-    private String extractTextByCandidateKeys(String data, List<String> keys) {
-        if (data == null || data.isBlank()) {
+    // ====================== 工具：查找并保存会话ID ======================
+    private String findAndSaveConversationId(String userId, String jsonData) {
+        try {
+            JsonNode node = objectMapper.readTree(jsonData);
+            return findAndSaveConversationId(userId, node);
+        } catch (Exception e) {
             return null;
         }
-        String[] parts = data.split("\\r?\\n");
-        StringBuilder merged = new StringBuilder();
-        for (String part : parts) {
-            if (part == null || part.isBlank()) {
-                continue;
-            }
-            String text = extractTextFromNode(part.trim(), keys);
-            if (text != null && !text.isBlank()) {
-                merged.append(text);
-            }
-        }
-        if (merged.length() > 0) {
-            return merged.toString();
-        }
-        return null;
     }
 
-    private String extractTextFromNode(String json, List<String> keys) {
-        try {
-            JsonNode root = objectMapper.readTree(json);
-            List<String> hits = new ArrayList<>();
-            collectCandidateText(root, keys, hits);
-            if (!hits.isEmpty()) {
-                StringBuilder result = new StringBuilder();
-                for (String hit : hits) {
-                    if (hit != null && !hit.isBlank()) {
-                        result.append(hit);
-                    }
-                }
-                if (result.length() > 0) {
-                    return result.toString();
-                }
+    private String findAndSaveConversationId(String userId, JsonNode node) {
+        if (node == null || node.isNull()) return null;
+
+        if (node.has("conversation_id") && node.get("conversation_id").isTextual()) {
+            String convId = node.get("conversation_id").asText().trim();
+            if (!convId.isBlank()) {
+                USER_CONVERSATION_CACHE.put(userId, convId);
+                log.info("✅【会话ID捕获】用户 {}: {}", userId, convId);
+                return convId;
             }
-        } catch (Exception ignore) {
-            // fallback below
         }
 
-        if (keys.contains("content")) {
-            return extractContentFromJson(json);
-        }
-        return null;
-    }
-
-    private void collectCandidateText(JsonNode node, List<String> keys, List<String> hits) {
-        if (node == null || node.isNull()) {
-            return;
-        }
         if (node.isObject()) {
-            for (String key : keys) {
-                JsonNode value = node.get(key);
-                if (value != null && value.isTextual()) {
-                    String text = value.asText();
-                    if (text != null && !text.isBlank()) {
-                        hits.add(text);
-                    }
-                }
-            }
             Iterator<JsonNode> iterator = node.elements();
             while (iterator.hasNext()) {
-                collectCandidateText(iterator.next(), keys, hits);
+                String convId = findAndSaveConversationId(userId, iterator.next());
+                if (convId != null) return convId;
             }
-            return;
         }
         if (node.isArray()) {
             for (JsonNode child : node) {
-                collectCandidateText(child, keys, hits);
+                String convId = findAndSaveConversationId(userId, child);
+                if (convId != null) return convId;
             }
+        }
+        return null;
+    }
+
+    // ====================== 工具：提取回答内容（适配Coze流式返回） ======================
+    private String extractAnswerContent(String jsonData) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(jsonData);
+            return extractAnswerContent(rootNode);
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    /**
-     * 流式调用 Coze 接口，动态传入用户提问内容
-     */
-    @Override
-    public SseEmitter streamChat(String content) {
-        // 创建 SSE 发射器
-        SseEmitter emitter = new SseEmitter(120000L);
+    private String extractAnswerContent(JsonNode node) {
+        if (node == null || node.isNull()) return null;
 
-        // 动态拼接请求体，content 为前端传入参数
-        String requestJson = """
-                {
-                  "bot_id": "%s",
-                  "stream": true,
-                  "additional_messages": [
-                    {
-                      "content_type": "text",
-                      "role": "user",
-                      "type": "question",
-                      "content": "%s"
-                    }
-                  ],
-                  "parameters": {},
-                  "user_id": "123"
-                }
-                """.formatted(BOT_ID, content.replace("\"", "\\\"")); // 转义双引号，避免JSON报错
-
-        // 构建请求
-        Request request = new Request.Builder()
-                .url(COZE_API_URL)
-                .addHeader("Authorization", "Bearer " + AUTH_TOKEN)
-                .addHeader("Content-Type", "application/json")
-                // 请求流式返回时，最好也声明 Accept: text/event-stream
-                .addHeader("Accept", "text/event-stream")
-                .post(RequestBody.create(requestJson, MediaType.parse("application/json; charset=utf-8")))
-                .build();
-
-        // 异步执行请求
-        okHttpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                try {
-                    emitter.send("请求失败：" + e.getMessage());
-                    emitter.complete();
-                } catch (Exception ex) {
-                    emitter.completeWithError(ex);
+        // 优先适配 Coze 流式返回核心结构
+        if (node.has("choices") && node.get("choices").isArray()) {
+            JsonNode choices = node.get("choices");
+            for (JsonNode choice : choices) {
+                JsonNode delta = choice.path("delta");
+                if (delta.has("content") && delta.get("content").isTextual()) {
+                    String content = delta.get("content").asText().trim();
+                    if (!content.isBlank()) return content;
                 }
             }
+        }
 
-            @Override
-            public void onResponse(Call call, Response response) {
-                try (ResponseBody body = response.body()) {
-                    if (!response.isSuccessful()) {
-                        String respText = body == null ? "" : body.string();
-                        log.error("Coze API returned error. code={}, body={}", response.code(), respText);
-                        emitter.send(SseEmitter.event().data("接口错误，状态码：" + response.code() + ", body:" + respText).name("error"));
+        // 兼容普通 content
+        if (node.has("content") && node.get("content").isTextual()) {
+            String content = node.get("content").asText().trim();
+            if (!content.isBlank()) return content;
+        }
+
+        // 递归兜底
+        if (node.isObject()) {
+            Iterator<JsonNode> iterator = node.elements();
+            while (iterator.hasNext()) {
+                String content = extractAnswerContent(iterator.next());
+                if (content != null && !content.isBlank()) return content;
+            }
+        }
+        if (node.isArray()) {
+            for (JsonNode child : node) {
+                String content = extractAnswerContent(child);
+                if (content != null && !content.isBlank()) return content;
+            }
+        }
+        return null;
+    }
+
+    // ====================== 工具：上传文件 ======================
+    private String uploadFileToCoze(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) return null;
+        log.info("📤 上传文件：{} ({}字节)", file.getOriginalFilename(), file.getSize());
+
+        RequestBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getOriginalFilename(),
+                        RequestBody.create(file.getBytes(), MediaType.parse(file.getContentType())))
+                .build();
+
+        Request request = new Request.Builder()
+                .url(COZE_UPLOAD_URL)
+                .addHeader("Authorization", "Bearer " + AUTH_TOKEN)
+                .post(requestBody)
+                .build();
+
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                String errorMsg = response.body() == null ? "空响应" : response.body().string();
+                log.error("❌ 文件上传失败: {}", errorMsg);
+                throw new RuntimeException("文件上传失败：" + errorMsg);
+            }
+            String respBody = response.body().string();
+            JsonNode root = objectMapper.readTree(respBody);
+            String fileId = root.path("data").path("id").asText();
+            log.info("✅ 文件上传成功: {}", fileId);
+            return fileId;
+        }
+    }
+
+    // ====================== 工具：构建多模态内容 ======================
+    private String buildMultiModalContent(String content, List<MultipartFile> files) throws IOException {
+        List<Map<String, Object>> contentList = new ArrayList<>();
+
+        // 文本
+        if (content == null || content.isBlank()) content = "请基于上传的文件内容回答";
+        Map<String, Object> textItem = new HashMap<>();
+        textItem.put("type", "text");
+        textItem.put("text", content);
+        contentList.add(textItem);
+        log.info("💬 提问文本：{}", content);
+
+        // 文件/图片
+        if (files != null && !files.isEmpty()) {
+            for (MultipartFile file : files) {
+                String fileId = uploadFileToCoze(file);
+                if (fileId == null) continue;
+                Map<String, Object> fileItem = new HashMap<>();
+                String contentType = file.getContentType() == null ? "" : file.getContentType().toLowerCase();
+                fileItem.put("type", contentType.startsWith("image/") ? "image" : "file");
+                fileItem.put("file_id", fileId);
+                contentList.add(fileItem);
+                log.info("📎 附加文件: {}", fileId);
+            }
+        }
+
+        return objectMapper.writeValueAsString(contentList);
+    }
+
+    // ====================== 流式对话（前端SSE，保持不变） ======================
+    @Override
+    public SseEmitter streamChat(String content, String userId, List<MultipartFile> files) {
+        SseEmitter emitter = new SseEmitter(300000L); // 5分钟超时
+        String finalUserId = (userId == null || userId.isBlank()) ? "default_user" : userId;
+        log.info("=====================================");
+        log.info("🚀【流式对话启动】用户: {}", finalUserId);
+
+        try {
+            String multiModalContent = buildMultiModalContent(content, files);
+
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("bot_id", BOT_ID);
+            requestBody.put("stream", true);
+            requestBody.put("user_id", finalUserId);
+            requestBody.put("parameters", new HashMap<>());
+
+            String cachedConvId = USER_CONVERSATION_CACHE.get(finalUserId);
+            if (cachedConvId != null && !cachedConvId.isBlank()) {
+                requestBody.put("conversation_id", cachedConvId);
+                log.info("✅【记忆生效】会话ID: {}", cachedConvId);
+            }
+
+            Map<String, Object> message = new HashMap<>();
+            message.put("content_type", "object_string");
+            message.put("role", "user");
+            message.put("type", "question");
+            message.put("content", multiModalContent);
+            requestBody.put("additional_messages", List.of(message));
+
+            String requestJson = objectMapper.writeValueAsString(requestBody);
+
+            Request request = new Request.Builder()
+                    .url(COZE_CHAT_API_URL)
+                    .addHeader("Authorization", "Bearer " + AUTH_TOKEN)
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Accept", "text/event-stream")
+                    .post(RequestBody.create(requestJson, MediaType.parse("application/json; charset=utf-8")))
+                    .build();
+
+            okHttpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    log.error("❌ 流式请求失败", e);
+                    try {
+                        emitter.send("请求失败：" + e.getMessage());
                         emitter.complete();
-                        return;
+                    } catch (Exception ex) {
+                        emitter.completeWithError(ex);
                     }
+                }
 
-                    if (body == null) {
-                        emitter.send(SseEmitter.event().data("空响应体").name("error"));
-                        emitter.complete();
-                        return;
-                    }
+                @Override
+                public void onResponse(Call call, Response response) {
+                    try (ResponseBody body = response.body()) {
+                        if (!response.isSuccessful()) {
+                            String respText = body == null ? "" : body.string();
+                            log.error("❌ Coze接口错误: {}", respText);
+                            emitter.send(SseEmitter.event().data("接口错误：" + respText).name("error"));
+                            emitter.complete();
+                            return;
+                        }
 
-                    try (Reader reader = body.charStream(); BufferedReader bufferedReader = new BufferedReader(reader)) {
-                        String line;
-                        StringBuilder dataBuilder = new StringBuilder();
-                        StringBuilder mergedAnswer = new StringBuilder();
-                        StringBuilder mergedThinking = new StringBuilder();
-                        String eventName = null;
+                        try (Reader reader = body.charStream();
+                             BufferedReader bufferedReader = new BufferedReader(reader)) {
+                            String line;
+                            StringBuilder dataBuilder = new StringBuilder();
+                            String eventName = null;
 
-                        while ((line = bufferedReader.readLine()) != null) {
-                            // 记录原始行，便于排查（日志量可能很大，DEBUG 级别）
-                            log.debug("Coze RAW: [{}]", line);
-
-                            // 标准 SSE 行以 "data:" 或 "event:" 开头，空行表示一个事件结束
-                            if (line.startsWith("data:")) {
-                                dataBuilder.append(line.substring(5).trim());
-                                dataBuilder.append('\n');
-                            } else if (line.startsWith("event:")) {
-                                eventName = line.substring(6).trim();
-                            } else if (line.trim().isEmpty()) {
-                                // 事件结束，发送拼接后的 data 内容
-                                String data = dataBuilder.toString().trim();
-                                if (!data.isEmpty()) {
-                                    if ("[DONE]".equals(data)) {
-                                        String answer = mergedAnswer.toString().trim();
-                                        String thinking = mergedThinking.toString().trim();
-                                        if (!thinking.isEmpty()) {
-                                            emitter.send(SseEmitter.event().name("thinking_merged").data(thinking));
-                                        }
-                                        if (!answer.isEmpty()) {
-                                            emitter.send(SseEmitter.event().name("answer_merged").data(answer));
-                                            emitter.send(SseEmitter.event().name("merged").data(answer));
-                                        }
-                                        emitter.send(SseEmitter.event().name("done").data("流式返回完成"));
-                                        break;
-                                    } else {
-                                        try {
-                                            String thinkingDelta = extractThinkingDelta(data);
-                                            if (thinkingDelta != null && !thinkingDelta.isBlank()) {
-                                                mergedThinking.append(thinkingDelta);
-                                                emitter.send(SseEmitter.event().name("thinking").data(thinkingDelta));
-                                            }
-
-                                            String answerDelta = extractAnswerDelta(data);
-                                            if (answerDelta != null && !answerDelta.isBlank()) {
-                                                mergedAnswer.append(answerDelta);
-                                                emitter.send(SseEmitter.event().name("answer").data(answerDelta));
-                                                emitter.send(SseEmitter.event().name("delta").data(answerDelta));
-                                            }
-                                        } catch (Exception ex) {
-                                            log.debug("解析 data JSON 时忽略错误，原始 data={}", data, ex);
-                                        }
-
-                                        try {
-                                            SseEmitter.SseEventBuilder ev = SseEmitter.event().name("raw").data(data);
-                                            if (eventName != null) ev.name(eventName);
-                                            emitter.send(ev);
-                                        } catch (IOException ioe) {
-                                            log.warn("向前端发送 SSE 失败", ioe);
+                            while ((line = bufferedReader.readLine()) != null) {
+                                if (line.startsWith("event:")) {
+                                    eventName = line.substring(6).trim();
+                                } else if (line.startsWith("data:")) {
+                                    dataBuilder.append(line.substring(5).trim());
+                                    dataBuilder.append('\n');
+                                } else if (line.trim().isEmpty()) {
+                                    String data = dataBuilder.toString().trim();
+                                    if (!data.isEmpty()) {
+                                        if ("[DONE]".equals(data)) {
+                                            emitter.send(SseEmitter.event().name("done").data("完成"));
                                             break;
                                         }
+
+                                        findAndSaveConversationId(finalUserId, data);
+                                        String answer = extractAnswerContent(data);
+                                        if (answer != null && !answer.isBlank()) {
+                                            emitter.send(SseEmitter.event().name(eventName == null ? "answer" : eventName).data(answer));
+                                        }
                                     }
-                                }
-                                dataBuilder.setLength(0);
-                                eventName = null;
-                            } else {
-                                // 非标准 SSE 也可能是直接的 JSON chunk，尝试直接发送
-                                String trimmed = line.trim();
-                                if (!trimmed.isEmpty()) {
-                                    try {
-                                        emitter.send(SseEmitter.event().name("raw").data(trimmed));
-                                    } catch (IOException ioe) {
-                                        log.warn("向前端发送非标准行失败", ioe);
-                                        break;
-                                    }
+                                    dataBuilder.setLength(0);
+                                    eventName = null;
                                 }
                             }
                         }
-                    }
 
-                } catch (Exception e) {
-                    emitter.completeWithError(e);
-                } finally {
-                    emitter.complete();
+                    } catch (Exception e) {
+                        emitter.completeWithError(e);
+                    } finally {
+                        emitter.complete();
+                        log.info("🏁【流式对话结束】");
+                        log.info("=====================================");
+                    }
                 }
-            }
-        });
+            });
+
+        } catch (Exception e) {
+            log.error("❌ 流式对话异常", e);
+            emitter.completeWithError(e);
+        }
 
         return emitter;
     }
 
-    /**
-     * 非流式获取完整合并内容，便于测试
-     */
+    // ====================== 非流式对话（终极稳定版） ======================
     @Override
-    public String mergedChat(String content) {
-        String requestJson = """
-                {
-                  "bot_id": "%s",
-                  "stream": true,
-                  "additional_messages": [
-                    {
-                      "content_type": "text",
-                      "role": "user",
-                      "type": "question",
-                      "content": "%s"
-                    }
-                  ],
-                  "parameters": {},
-                  "user_id": "123"
+    public String mergedChat(String content, String userId, List<MultipartFile> files) {
+        String finalUserId = (userId == null || userId.isBlank()) ? "default_user" : userId;
+        log.info("=====================================");
+        log.info("🚀【非流式对话启动】用户: {}", finalUserId);
+        log.info("💬 提问: {}", content);
+
+        // 【核心修复3】添加重试机制，失败自动重试1次
+        int maxRetries = 2;
+        int retryCount = 0;
+
+        while (retryCount < maxRetries) {
+            try {
+                return doMergedChat(content, finalUserId, files);
+            } catch (Exception e) {
+                retryCount++;
+                log.warn("⚠️ 第{}次请求失败，准备重试: {}", retryCount, e.getMessage());
+                if (retryCount >= maxRetries) {
+                    log.error("❌ 所有重试均失败", e);
+                    return "请求处理失败，请稍后重试：" + e.getMessage();
                 }
-                """.formatted(BOT_ID, content.replace("\"", "\\\""));
+                try {
+                    Thread.sleep(2000); // 重试前等待2秒
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    return "请求被中断";
+                }
+            }
+        }
+        return "请求处理失败";
+    }
+
+    // 实际的非流式对话逻辑
+    private String doMergedChat(String content, String userId, List<MultipartFile> files) throws IOException {
+        StringBuilder fullAnswer = new StringBuilder();
+        String multiModalContent = buildMultiModalContent(content, files);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("bot_id", BOT_ID);
+        requestBody.put("stream", true);
+        requestBody.put("user_id", userId);
+        requestBody.put("parameters", new HashMap<>());
+
+        String cachedConvId = USER_CONVERSATION_CACHE.get(userId);
+        if (cachedConvId != null && !cachedConvId.isBlank()) {
+            requestBody.put("conversation_id", cachedConvId);
+            log.info("✅【记忆生效】会话ID: {}", cachedConvId);
+        }
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("content_type", "object_string");
+        message.put("role", "user");
+        message.put("type", "question");
+        message.put("content", multiModalContent);
+        requestBody.put("additional_messages", List.of(message));
+
+        String requestJson = objectMapper.writeValueAsString(requestBody);
 
         Request request = new Request.Builder()
-                .url(COZE_API_URL)
+                .url(COZE_CHAT_API_URL)
                 .addHeader("Authorization", "Bearer " + AUTH_TOKEN)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Accept", "text/event-stream")
+                .addHeader("Connection", "keep-alive") // 保活
                 .post(RequestBody.create(requestJson, MediaType.parse("application/json; charset=utf-8")))
                 .build();
 
         try (Response response = okHttpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                String respText = response.body() == null ? "" : response.body().string();
-                log.error("Coze API returned error. code={}, body={}", response.code(), respText);
-                return "接口错误，状态码：" + response.code() + ", body:" + respText;
+                String errorMsg = response.body() == null ? "空响应" : response.body().string();
+                log.error("❌ Coze接口错误: {}", errorMsg);
+                throw new RuntimeException("接口错误：" + response.code() + " → " + errorMsg);
             }
 
-            ResponseBody body = response.body();
-            if (body == null) {
-                return "空响应体";
+            if (response.body() == null) {
+                throw new RuntimeException("AI返回空响应体");
             }
 
-            StringBuilder mergedContent = new StringBuilder();
-            try (Reader reader = body.charStream(); BufferedReader bufferedReader = new BufferedReader(reader)) {
+            try (Reader reader = response.body().charStream();
+                 BufferedReader bufferedReader = new BufferedReader(reader)) {
+
                 String line;
                 StringBuilder dataBuilder = new StringBuilder();
-                while ((line = bufferedReader.readLine()) != null) {
-                    log.debug("Coze RAW: [{}]", line);
 
+                while ((line = bufferedReader.readLine()) != null) {
                     if (line.startsWith("data:")) {
                         dataBuilder.append(line.substring(5).trim());
-                        dataBuilder.append('\n');
                     } else if (line.trim().isEmpty()) {
                         String data = dataBuilder.toString().trim();
-                        if (!data.isEmpty()) {
-                            if ("[DONE]".equals(data)) {
-                                break;
-                            }
-                            try {
-                                String extracted = extractContentFromJson(data);
-                                if (extracted != null && !extracted.isEmpty()) {
-                                    mergedContent.append(extracted);
-                                }
-                            } catch (Exception ex) {
-                                log.debug("解析 data JSON 时忽略错误，原始 data={}", data, ex);
-                            }
-                        }
                         dataBuilder.setLength(0);
+
+                        if ("[DONE]".equals(data)) {
+                            log.info("✅ 收到[DONE]，流读取完成");
+                            break;
+                        }
+
+                        if (data.isBlank()) continue;
+
+                        findAndSaveConversationId(userId, data);
+                        String answerFragment = extractAnswerContent(data);
+                        if (answerFragment != null && !answerFragment.isBlank()) {
+                            fullAnswer.append(answerFragment);
+                        }
                     }
                 }
             }
-            return mergedContent.toString().trim();
-        } catch (Exception e) {
-            log.error("Coze mergedChat 调用失败", e);
-            return "请求失败：" + e.getMessage();
+
+            String finalResult = fullAnswer.toString().trim();
+            if (finalResult.isBlank()) {
+                log.warn("⚠️ AI未返回有效内容");
+                return "AI未返回有效内容，请检查Bot配置或重试";
+            }
+
+            log.info("🏁【非流式对话成功】回答长度: {}字符", finalResult.length());
+            log.info("=====================================");
+            return finalResult;
         }
     }
 }
