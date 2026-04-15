@@ -149,7 +149,6 @@ public class CozeChatServiceImpl implements CozeChatService {
                     String convId = node.get("conversation_id").asText().trim();
                     if (!convId.isEmpty()) {
                         USER_CONVERSATION_CACHE.put(userId, convId);
-                        log.info("✅【会话ID捕获-完成事件】用户 {}: {}", userId, convId);
                         return convId;
                     }
                 }
@@ -165,7 +164,6 @@ public class CozeChatServiceImpl implements CozeChatService {
                 String convId = node.get("conversation_id").asText().trim();
                 if (!convId.isEmpty()) {
                     USER_CONVERSATION_CACHE.put(userId, convId);
-                    log.info("✅【会话ID捕获-通用】用户 {}: {}", userId, convId);
                     return convId;
                 }
             }
