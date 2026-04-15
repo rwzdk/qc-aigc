@@ -41,57 +41,142 @@ public class CozeChatServiceImpl implements CozeChatService {
     private final Map<String, String> USER_CONVERSATION_CACHE = new ConcurrentHashMap<>();
 
     public CozeChatServiceImpl() {
-        // 【核心修复1】配置超稳定的 OkHttpClient
         this.okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)      // 连接超时1分钟
-                .readTimeout(300, TimeUnit.SECONDS)        // 【关键】读超时5分钟，彻底解决AI生成超时
-                .writeTimeout(60, TimeUnit.SECONDS)         // 写入超时1分钟
-                .callTimeout(300, TimeUnit.SECONDS)         // 整个调用超时5分钟
-                .retryOnConnectionFailure(true)              // 连接失败自动重试
-                .connectionPool(new ConnectionPool(5, 5, TimeUnit.MINUTES)) // 连接池保活
-                .protocols(Arrays.asList(Protocol.HTTP_1_1)) // 【核心修复2】强制只用HTTP/1.1，彻底解决HTTP/2流重置
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(300, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
+                .callTimeout(300, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .connectionPool(new ConnectionPool(5, 5, TimeUnit.MINUTES))
+                .protocols(Arrays.asList(Protocol.HTTP_1_1))
                 .build();
     }
 
-    // ====================== 工具：查找并保存会话ID ======================
-    private String findAndSaveConversationId(String userId, String jsonData) {
-        try {
-            JsonNode node = objectMapper.readTree(jsonData);
-            return findAndSaveConversationId(userId, node);
-        } catch (Exception e) {
+    // ====================== 会话管理工具方法 ======================
+
+    public String getConversationId(String userId) {
+        if (userId == null) {
             return null;
+        }
+        return USER_CONVERSATION_CACHE.getOrDefault(userId, null);
+    }
+
+    public void setConversationId(String userId, String conversationId) {
+        if (userId != null && conversationId != null && !conversationId.trim().isEmpty()) {
+            USER_CONVERSATION_CACHE.put(userId, conversationId.trim());
+            log.info("💾 手动设置会话ID: {} -> {}", userId, conversationId);
         }
     }
 
-    private String findAndSaveConversationId(String userId, JsonNode node) {
-        if (node == null || node.isNull()) return null;
-
-        if (node.has("conversation_id") && node.get("conversation_id").isTextual()) {
-            String convId = node.get("conversation_id").asText().trim();
-            if (!convId.isBlank()) {
-                USER_CONVERSATION_CACHE.put(userId, convId);
-                log.info("✅【会话ID捕获】用户 {}: {}", userId, convId);
-                return convId;
-            }
+    public void clearConversation(String userId) {
+        if (userId != null) {
+            USER_CONVERSATION_CACHE.remove(userId);
+            log.info("🧹 已清除用户 {} 的会话记忆", userId);
         }
+    }
 
-        if (node.isObject()) {
-            Iterator<JsonNode> iterator = node.elements();
-            while (iterator.hasNext()) {
-                String convId = findAndSaveConversationId(userId, iterator.next());
-                if (convId != null) return convId;
-            }
+    public Map<String, String> getAllConversations() {
+        return new HashMap<>(USER_CONVERSATION_CACHE);
+    }
+
+    private String normalizeUserId(String userId) {
+        if (userId == null || userId.isBlank()) {
+            return "default_user";
         }
-        if (node.isArray()) {
-            for (JsonNode child : node) {
-                String convId = findAndSaveConversationId(userId, child);
-                if (convId != null) return convId;
-            }
+        return userId.trim();
+    }
+
+    private String resolveConversationId(String userId) {
+        String cached = USER_CONVERSATION_CACHE.get(userId);
+        if (cached != null && !cached.isBlank()) {
+            return cached;
         }
         return null;
     }
 
-    // ====================== 工具：提取回答内容（适配Coze流式返回） ======================
+    // ====================== 工具：从conversation.chat.created事件提取会话ID ======================
+    private String extractConversationIdFromEvent(String eventName, String jsonData) {
+        if (!"conversation.chat.created".equals(eventName)) {
+            return null;
+        }
+
+        try {
+            JsonNode node = objectMapper.readTree(jsonData);
+            if (node.has("conversation_id") && node.get("conversation_id").isTextual()) {
+                String convId = node.get("conversation_id").asText().trim();
+                if (!convId.isEmpty() && !"null".equals(convId)) {
+                    log.info("🎯【会话ID捕获】从 {} 事件获取: {}", eventName, convId);
+                    return convId;
+                }
+            }
+
+            // 兼容其他可能的结构
+            if (node.has("id") && node.get("id").isTextual()) {
+                String id = node.get("id").asText().trim();
+                if (!id.isEmpty()) {
+                    log.info("🎯【会话ID捕获-备用】从 {} 事件的id字段获取: {}", eventName, id);
+                    return id;
+                }
+            }
+        } catch (Exception e) {
+            log.warn("⚠️ 解析conversation.chat.created事件失败: {}", e.getMessage());
+        }
+        return null;
+    }
+
+    // ====================== 工具：查找并保存会话ID ======================
+    private String findAndSaveConversationId(String userId, String eventName, String jsonData) {
+        if (userId == null || jsonData == null || jsonData.trim().isEmpty()) {
+            return null;
+        }
+
+        // 【优先级1】从conversation.chat.created事件提取
+        if ("conversation.chat.created".equals(eventName)) {
+            String convId = extractConversationIdFromEvent(eventName, jsonData);
+            if (convId != null) {
+                USER_CONVERSATION_CACHE.put(userId, convId);
+                log.info("✅【会话ID已保存】用户 {}: {}", userId, convId);
+                return convId;
+            }
+        }
+
+        // 【优先级2】从conversation.chat.completed事件提取
+        if ("conversation.chat.completed".equals(eventName) ||
+                "conversation.message.completed".equals(eventName)) {
+            try {
+                JsonNode node = objectMapper.readTree(jsonData);
+                if (node.has("conversation_id") && node.get("conversation_id").isTextual()) {
+                    String convId = node.get("conversation_id").asText().trim();
+                    if (!convId.isEmpty()) {
+                        USER_CONVERSATION_CACHE.put(userId, convId);
+                        log.info("✅【会话ID捕获-完成事件】用户 {}: {}", userId, convId);
+                        return convId;
+                    }
+                }
+            } catch (Exception e) {
+                // 忽略解析错误
+            }
+        }
+
+        // 【优先级3】通用解析（兜底）
+        try {
+            JsonNode node = objectMapper.readTree(jsonData);
+            if (node.has("conversation_id") && node.get("conversation_id").isTextual()) {
+                String convId = node.get("conversation_id").asText().trim();
+                if (!convId.isEmpty()) {
+                    USER_CONVERSATION_CACHE.put(userId, convId);
+                    log.info("✅【会话ID捕获-通用】用户 {}: {}", userId, convId);
+                    return convId;
+                }
+            }
+        } catch (Exception e) {
+            // 不是JSON格式，忽略
+        }
+
+        return null;
+    }
+
+    // ====================== 工具：提取回答内容 ======================
     private String extractAnswerContent(String jsonData) {
         try {
             JsonNode rootNode = objectMapper.readTree(jsonData);
@@ -199,40 +284,62 @@ public class CozeChatServiceImpl implements CozeChatService {
         return objectMapper.writeValueAsString(contentList);
     }
 
-    // ====================== 流式对话（前端SSE，保持不变） ======================
+    // ====================== 工具：构建文本内容 ======================
+    private String buildTextContent(String content) {
+        if (content == null || content.isBlank()) content = "请基于上传的文件内容回答";
+        log.info("💬 提问文本：{}", content);
+        return content;
+    }
+
+    // ====================== 流式对话 ======================
     @Override
     public SseEmitter streamChat(String content, String userId, List<MultipartFile> files) {
-        SseEmitter emitter = new SseEmitter(300000L); // 5分钟超时
-        String finalUserId = (userId == null || userId.isBlank()) ? "default_user" : userId;
+        SseEmitter emitter = new SseEmitter(300000L);
+        String finalUserId = normalizeUserId(userId);
         log.info("=====================================");
         log.info("🚀【流式对话启动】用户: {}", finalUserId);
+        log.info("🔍 当前会话缓存: {}", USER_CONVERSATION_CACHE);
+        log.info("🔍 用户 {} 的缓存会话ID: {}", finalUserId, USER_CONVERSATION_CACHE.get(finalUserId));
 
         try {
-            String multiModalContent = buildMultiModalContent(content, files);
-
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("bot_id", BOT_ID);
             requestBody.put("stream", true);
             requestBody.put("user_id", finalUserId);
+            requestBody.put("auto_save_history", true);
             requestBody.put("parameters", new HashMap<>());
 
-            String cachedConvId = USER_CONVERSATION_CACHE.get(finalUserId);
-            if (cachedConvId != null && !cachedConvId.isBlank()) {
-                requestBody.put("conversation_id", cachedConvId);
-                log.info("✅【记忆生效】会话ID: {}", cachedConvId);
+            String targetConversationId = resolveConversationId(finalUserId);
+            if (targetConversationId == null) {
+                log.info("🆕【新会话】用户 {} 开始新对话", finalUserId);
+            } else {
+                log.info("✅【记忆生效】使用会话ID: {}", targetConversationId);
             }
 
             Map<String, Object> message = new HashMap<>();
-            message.put("content_type", "object_string");
-            message.put("role", "user");
-            message.put("type", "question");
-            message.put("content", multiModalContent);
+            if (files != null && !files.isEmpty()) {
+                String multiModalContent = buildMultiModalContent(content, files);
+                message.put("content_type", "object_string");
+                message.put("role", "user");
+                message.put("type", "question");
+                message.put("content", multiModalContent);
+            } else {
+                message.put("content_type", "text");
+                message.put("role", "user");
+                message.put("type", "question");
+                message.put("content", content);
+            }
             requestBody.put("additional_messages", List.of(message));
 
             String requestJson = objectMapper.writeValueAsString(requestBody);
 
+            HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(COZE_CHAT_API_URL)).newBuilder();
+            if (targetConversationId != null) {
+                urlBuilder.addQueryParameter("conversation_id", targetConversationId);
+            }
+
             Request request = new Request.Builder()
-                    .url(COZE_CHAT_API_URL)
+                    .url(urlBuilder.build())
                     .addHeader("Authorization", "Bearer " + AUTH_TOKEN)
                     .addHeader("Content-Type", "application/json")
                     .addHeader("Accept", "text/event-stream")
@@ -244,7 +351,7 @@ public class CozeChatServiceImpl implements CozeChatService {
                 public void onFailure(Call call, IOException e) {
                     log.error("❌ 流式请求失败", e);
                     try {
-                        emitter.send("请求失败：" + e.getMessage());
+                        emitter.send(SseEmitter.event().name("error").data("请求失败：" + e.getMessage()));
                         emitter.complete();
                     } catch (Exception ex) {
                         emitter.completeWithError(ex);
@@ -257,7 +364,7 @@ public class CozeChatServiceImpl implements CozeChatService {
                         if (!response.isSuccessful()) {
                             String respText = body == null ? "" : body.string();
                             log.error("❌ Coze接口错误: {}", respText);
-                            emitter.send(SseEmitter.event().data("接口错误：" + respText).name("error"));
+                            emitter.send(SseEmitter.event().name("error").data("接口错误：" + respText));
                             emitter.complete();
                             return;
                         }
@@ -272,20 +379,37 @@ public class CozeChatServiceImpl implements CozeChatService {
                                 if (line.startsWith("event:")) {
                                     eventName = line.substring(6).trim();
                                 } else if (line.startsWith("data:")) {
-                                    dataBuilder.append(line.substring(5).trim());
-                                    dataBuilder.append('\n');
+                                    String dataLine = line.substring(5).trim();
+                                    if (!dataLine.trim().isEmpty()) {
+                                        dataBuilder.append(dataLine);
+                                    }
                                 } else if (line.trim().isEmpty()) {
                                     String data = dataBuilder.toString().trim();
                                     if (!data.isEmpty()) {
                                         if ("[DONE]".equals(data)) {
+                                            log.info("🏁 收到DONE事件，流式传输完成");
                                             emitter.send(SseEmitter.event().name("done").data("完成"));
                                             break;
                                         }
 
-                                        findAndSaveConversationId(finalUserId, data);
-                                        String answer = extractAnswerContent(data);
-                                        if (answer != null && !answer.isBlank()) {
-                                            emitter.send(SseEmitter.event().name(eventName == null ? "answer" : eventName).data(answer));
+                                        // 提取并保存会话ID（无论是否已有会话ID）
+                                        String conversationId = findAndSaveConversationId(finalUserId, eventName, data);
+                                        if (conversationId != null) {
+                                            // 将会话ID发送给前端
+                                            emitter.send(SseEmitter.event()
+                                                    .name("conversation_id")
+                                                    .data(conversationId));
+                                        }
+
+                                        // 提取回答内容（跳过conversation.chat.created事件）
+                                        if (!"conversation.chat.created".equals(eventName)) {
+                                            String answer = extractAnswerContent(data);
+                                            if (answer != null && !answer.isBlank()) {
+                                                String eventToUse = eventName != null ? eventName : "answer";
+                                                emitter.send(SseEmitter.event()
+                                                        .name(eventToUse)
+                                                        .data(answer));
+                                            }
                                         }
                                     }
                                     dataBuilder.setLength(0);
@@ -295,6 +419,12 @@ public class CozeChatServiceImpl implements CozeChatService {
                         }
 
                     } catch (Exception e) {
+                        log.error("❌ 处理SSE流时发生异常", e);
+                        try {
+                            emitter.send(SseEmitter.event().name("error").data("处理响应失败：" + e.getMessage()));
+                        } catch (Exception ex) {
+                            // 忽略发送错误
+                        }
                         emitter.completeWithError(e);
                     } finally {
                         emitter.complete();
@@ -306,21 +436,27 @@ public class CozeChatServiceImpl implements CozeChatService {
 
         } catch (Exception e) {
             log.error("❌ 流式对话异常", e);
+            try {
+                emitter.send(SseEmitter.event().name("error").data("系统异常：" + e.getMessage()));
+            } catch (Exception ex) {
+                // 忽略发送错误
+            }
             emitter.completeWithError(e);
         }
 
         return emitter;
     }
 
-    // ====================== 非流式对话（终极稳定版） ======================
+    // ====================== 非流式对话 ======================
     @Override
     public String mergedChat(String content, String userId, List<MultipartFile> files) {
-        String finalUserId = (userId == null || userId.isBlank()) ? "default_user" : userId;
+        String finalUserId = normalizeUserId(userId);
         log.info("=====================================");
         log.info("🚀【非流式对话启动】用户: {}", finalUserId);
+        log.info("🔍 当前会话缓存: {}", USER_CONVERSATION_CACHE);
+        log.info("🔍 用户 {} 的缓存会话ID: {}", finalUserId, USER_CONVERSATION_CACHE.get(finalUserId));
         log.info("💬 提问: {}", content);
 
-        // 【核心修复3】添加重试机制，失败自动重试1次
         int maxRetries = 2;
         int retryCount = 0;
 
@@ -335,7 +471,7 @@ public class CozeChatServiceImpl implements CozeChatService {
                     return "请求处理失败，请稍后重试：" + e.getMessage();
                 }
                 try {
-                    Thread.sleep(2000); // 重试前等待2秒
+                    Thread.sleep(2000);
                 } catch (InterruptedException ie) {
                     Thread.currentThread().interrupt();
                     return "请求被中断";
@@ -348,35 +484,48 @@ public class CozeChatServiceImpl implements CozeChatService {
     // 实际的非流式对话逻辑
     private String doMergedChat(String content, String userId, List<MultipartFile> files) throws IOException {
         StringBuilder fullAnswer = new StringBuilder();
-        String multiModalContent = buildMultiModalContent(content, files);
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("bot_id", BOT_ID);
-        requestBody.put("stream", true);
+        requestBody.put("stream", false);
         requestBody.put("user_id", userId);
+        requestBody.put("auto_save_history", true);
         requestBody.put("parameters", new HashMap<>());
 
-        String cachedConvId = USER_CONVERSATION_CACHE.get(userId);
-        if (cachedConvId != null && !cachedConvId.isBlank()) {
-            requestBody.put("conversation_id", cachedConvId);
-            log.info("✅【记忆生效】会话ID: {}", cachedConvId);
+        String targetConversationId = resolveConversationId(userId);
+        if (targetConversationId == null) {
+            log.info("🆕【新会话】用户 {} 开始新对话", userId);
+        } else {
+            log.info("✅【记忆生效】使用会话ID: {}", targetConversationId);
         }
 
         Map<String, Object> message = new HashMap<>();
-        message.put("content_type", "object_string");
-        message.put("role", "user");
-        message.put("type", "question");
-        message.put("content", multiModalContent);
+        if (files != null && !files.isEmpty()) {
+            String multiModalContent = buildMultiModalContent(content, files);
+            message.put("content_type", "object_string");
+            message.put("role", "user");
+            message.put("type", "question");
+            message.put("content", multiModalContent);
+        } else {
+            message.put("content_type", "text");
+            message.put("role", "user");
+            message.put("type", "question");
+            message.put("content", content);
+        }
         requestBody.put("additional_messages", List.of(message));
 
         String requestJson = objectMapper.writeValueAsString(requestBody);
 
+        HttpUrl.Builder urlBuilder = Objects.requireNonNull(HttpUrl.parse(COZE_CHAT_API_URL)).newBuilder();
+        if (targetConversationId != null) {
+            urlBuilder.addQueryParameter("conversation_id", targetConversationId);
+        }
+
         Request request = new Request.Builder()
-                .url(COZE_CHAT_API_URL)
+                .url(urlBuilder.build())
                 .addHeader("Authorization", "Bearer " + AUTH_TOKEN)
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Accept", "text/event-stream")
-                .addHeader("Connection", "keep-alive") // 保活
+                .addHeader("Accept", "application/json")
                 .post(RequestBody.create(requestJson, MediaType.parse("application/json; charset=utf-8")))
                 .build();
 
@@ -391,33 +540,22 @@ public class CozeChatServiceImpl implements CozeChatService {
                 throw new RuntimeException("AI返回空响应体");
             }
 
-            try (Reader reader = response.body().charStream();
-                 BufferedReader bufferedReader = new BufferedReader(reader)) {
+            String responseBody = response.body().string();
+            JsonNode rootNode = objectMapper.readTree(responseBody);
 
-                String line;
-                StringBuilder dataBuilder = new StringBuilder();
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    if (line.startsWith("data:")) {
-                        dataBuilder.append(line.substring(5).trim());
-                    } else if (line.trim().isEmpty()) {
-                        String data = dataBuilder.toString().trim();
-                        dataBuilder.setLength(0);
-
-                        if ("[DONE]".equals(data)) {
-                            log.info("✅ 收到[DONE]，流读取完成");
-                            break;
-                        }
-
-                        if (data.isBlank()) continue;
-
-                        findAndSaveConversationId(userId, data);
-                        String answerFragment = extractAnswerContent(data);
-                        if (answerFragment != null && !answerFragment.isBlank()) {
-                            fullAnswer.append(answerFragment);
-                        }
-                    }
+            // 提取会话ID（无论是否已有会话ID）
+            if (rootNode.has("conversation_id")) {
+                String returnedConversationId = rootNode.get("conversation_id").asText().trim();
+                if (!returnedConversationId.isEmpty()) {
+                    USER_CONVERSATION_CACHE.put(userId, returnedConversationId);
+                    log.info("✅【非流式】捕获会话ID: {}", returnedConversationId);
                 }
+            }
+
+            // 提取回答内容
+            String answer = extractAnswerContent(rootNode);
+            if (answer != null && !answer.isBlank()) {
+                fullAnswer.append(answer);
             }
 
             String finalResult = fullAnswer.toString().trim();
