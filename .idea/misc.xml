@@ -14,10 +14,45 @@
         <option value="$PROJECT_DIR$/spring-ai-alibaba-audio-example/pom.xml" />
         <option value="$PROJECT_DIR$/dashscope-audio/pom.xml" />
         <option value="$PROJECT_DIR$/qc-audio/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/pom.xml" />
+        <option value="$PROJECT_DIR$/aiflowy/pom.xml" />
+        <option value="$PROJECT_DIR$/qc-jxaigc/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-api/aiflowy-api-admin/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-api/aiflowy-api-mcp/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-api/aiflowy-api-public/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-api/aiflowy-api-usercenter/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-api/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-ai/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-all/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-audio/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-base/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-cache/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-captcha/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-chat-protocol/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-file-storage/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-options/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-satoken/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/aiflowy-common-web/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-commons/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-modules/aiflowy-module-ai/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-modules/aiflowy-module-auth/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-modules/aiflowy-module-autoconfig/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-modules/aiflowy-module-datacenter/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-modules/aiflowy-module-job/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-modules/aiflowy-module-log/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-modules/aiflowy-module-system/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-modules/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-starter/aiflowy-starter-admin/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-starter/aiflowy-starter-all/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-starter/aiflowy-starter-codegen/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-starter/aiflowy-starter-public/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-starter/aiflowy-starter-usercenter/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/aiflowy-starter/pom.xml" />
+        <option value="$PROJECT_DIR$/../../aiflowy/pom.xml" />
         <option value="$PROJECT_DIR$/mars-core/mars-mall/pom.xml" />
         <option value="$PROJECT_DIR$/mars-core/mars-test/pom.xml" />
       </set>

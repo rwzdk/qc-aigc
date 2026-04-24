@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api-admin/aiflowy-api-admin (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api-admin/aiflowy-api-admin (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api-mcp/aiflowy-api-mcp (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api-mcp/aiflowy-api-mcp (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api-public/aiflowy-api-public (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api-public/aiflowy-api-public (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api-usercenter/aiflowy-api-usercenter (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-api/aiflowy-api-usercenter/aiflowy-api-usercenter (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-ai/aiflowy-common-ai (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-ai/aiflowy-common-ai (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-all/aiflowy-common-all (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-all/aiflowy-common-all (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-audio/aiflowy-common-audio (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-audio/aiflowy-common-audio (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-base/aiflowy-common-base (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-base/aiflowy-common-base (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-cache/aiflowy-common-cache (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-cache/aiflowy-common-cache (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-captcha/aiflowy-common-captcha (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-captcha/aiflowy-common-captcha (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-chat-protocol/aiflowy-common-chat-protocol (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-chat-protocol/aiflowy-common-chat-protocol (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-file-storage/aiflowy-common-file-storage (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-file-storage/aiflowy-common-file-storage (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-options/aiflowy-common-options (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-options/aiflowy-common-options (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-satoken/aiflowy-common-satoken (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-satoken/aiflowy-common-satoken (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-web/aiflowy-common-web (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-common-web/aiflowy-common-web (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-commons (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-commons/aiflowy-commons (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-ai/aiflowy-module-ai (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-ai/aiflowy-module-ai (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-auth/aiflowy-module-auth (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-auth/aiflowy-module-auth (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-autoconfig/aiflowy-module-autoconfig (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-autoconfig/aiflowy-module-autoconfig (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-datacenter/aiflowy-module-datacenter (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-datacenter/aiflowy-module-datacenter (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-job/aiflowy-module-job (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-job/aiflowy-module-job (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-log/aiflowy-module-log (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-log/aiflowy-module-log (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-system/aiflowy-module-system (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-module-system/aiflowy-module-system (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-modules (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-modules/aiflowy-modules (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-admin/aiflowy-starter-admin (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-admin/aiflowy-starter-admin (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-all/aiflowy-starter-all (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-all/aiflowy-starter-all (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-codegen/aiflowy-starter-codegen (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-codegen/aiflowy-starter-codegen (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-public/aiflowy-starter-public (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-public/aiflowy-starter-public (2).iml" />
+      <module fileurl="file://$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-usercenter/aiflowy-starter-usercenter (2).iml" filepath="$PROJECT_DIR$/aiflowy/aiflowy-starter/aiflowy-starter-usercenter/aiflowy-starter-usercenter (2).iml" />
+    </modules>
+  </component>
+</project>

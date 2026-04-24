@@ -13,10 +13,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.Reader;
+import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class CozeChatServiceImpl implements CozeChatService {
@@ -40,16 +43,8 @@ public class CozeChatServiceImpl implements CozeChatService {
     // 会话缓存
     private final Map<String, String> USER_CONVERSATION_CACHE = new ConcurrentHashMap<>();
 
-    public CozeChatServiceImpl() {
-        this.okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(300, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
-                .callTimeout(300, TimeUnit.SECONDS)
-                .retryOnConnectionFailure(true)
-                .connectionPool(new ConnectionPool(5, 5, TimeUnit.MINUTES))
-                .protocols(Arrays.asList(Protocol.HTTP_1_1))
-                .build();
+    public CozeChatServiceImpl(OkHttpClient okHttpClient) {
+        this.okHttpClient = okHttpClient;
     }
 
     // ====================== 会话管理工具方法 ======================
@@ -289,10 +284,45 @@ public class CozeChatServiceImpl implements CozeChatService {
         return content;
     }
 
+    private boolean sendIfActive(SseEmitter emitter, AtomicBoolean completed, SseEmitter.SseEventBuilder event) {
+        if (completed.get()) {
+            return false;
+        }
+        try {
+            emitter.send(event);
+            return true;
+        } catch (IllegalStateException | IOException ex) {
+            completed.set(true);
+            log.debug("⚠️ SSE已完成或发送失败，停止发送: {}", ex.getMessage());
+            return false;
+        }
+    }
+
+    private void completeIfActive(SseEmitter emitter, AtomicBoolean completed) {
+        if (completed.compareAndSet(false, true)) {
+            try {
+                emitter.complete();
+            } catch (IllegalStateException ex) {
+                log.debug("⚠️ SSE已完成，忽略重复完成: {}", ex.getMessage());
+            }
+        }
+    }
+
+    private void completeWithErrorIfActive(SseEmitter emitter, AtomicBoolean completed, Exception ex) {
+        if (completed.compareAndSet(false, true)) {
+            try {
+                emitter.completeWithError(ex);
+            } catch (IllegalStateException err) {
+                log.debug("⚠️ SSE已完成，忽略错误完成: {}", err.getMessage());
+            }
+        }
+    }
+
     // ====================== 流式对话 ======================
     @Override
     public SseEmitter streamChat(String content, String userId, List<MultipartFile> files) {
         SseEmitter emitter = new SseEmitter(300000L);
+        AtomicBoolean completed = new AtomicBoolean(false);
         String finalUserId = normalizeUserId(userId);
         log.info("=====================================");
         log.info("🚀【流式对话启动】用户: {}", finalUserId);
@@ -344,26 +374,48 @@ public class CozeChatServiceImpl implements CozeChatService {
                     .post(RequestBody.create(requestJson, MediaType.parse("application/json; charset=utf-8")))
                     .build();
 
-            okHttpClient.newCall(request).enqueue(new Callback() {
+            Call call = okHttpClient.newCall(request);
+
+            emitter.onTimeout(() -> {
+                if (completed.compareAndSet(false, true)) {
+                    log.warn("⏱️ SSE超时，结束流式输出");
+                }
+                call.cancel();
+            });
+            emitter.onCompletion(() -> {
+                completed.set(true);
+                call.cancel();
+            });
+            emitter.onError(ex -> {
+                completed.set(true);
+                call.cancel();
+            });
+
+            call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    log.error("❌ 流式请求失败", e);
-                    try {
-                        emitter.send(SseEmitter.event().name("error").data("请求失败：" + e.getMessage()));
-                        emitter.complete();
-                    } catch (Exception ex) {
-                        emitter.completeWithError(ex);
+                    if (call.isCanceled() || completed.get()) {
+                        log.info("✅ SSE已结束，忽略回调失败: {}", e.getMessage());
+                        return;
                     }
+                    log.error("❌ 流式请求失败", e);
+                    sendIfActive(emitter, completed,
+                            SseEmitter.event().name("error").data("请求失败：" + e.getMessage()));
+                    completeWithErrorIfActive(emitter, completed, e);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) {
                     try (ResponseBody body = response.body()) {
+                        if (completed.get()) {
+                            return;
+                        }
                         if (!response.isSuccessful()) {
                             String respText = body == null ? "" : body.string();
                             log.error("❌ Coze接口错误: {}", respText);
-                            emitter.send(SseEmitter.event().name("error").data("接口错误：" + respText));
-                            emitter.complete();
+                            sendIfActive(emitter, completed,
+                                    SseEmitter.event().name("error").data("接口错误：" + respText));
+                            completeIfActive(emitter, completed);
                             return;
                         }
 
@@ -373,59 +425,60 @@ public class CozeChatServiceImpl implements CozeChatService {
                             StringBuilder dataBuilder = new StringBuilder();
                             String eventName = null;
 
-                            while ((line = bufferedReader.readLine()) != null) {
-                                if (line.startsWith("event:")) {
-                                    eventName = line.substring(6).trim();
-                                } else if (line.startsWith("data:")) {
-                                    String dataLine = line.substring(5).trim();
-                                    if (!dataLine.trim().isEmpty()) {
-                                        dataBuilder.append(dataLine);
-                                    }
-                                } else if (line.trim().isEmpty()) {
-                                    String data = dataBuilder.toString().trim();
-                                    if (!data.isEmpty()) {
-                                        if ("[DONE]".equals(data)) {
-                                            log.info("🏁 收到DONE事件，流式传输完成");
-                                            emitter.send(SseEmitter.event().name("done").data("完成"));
-                                            break;
+                            try {
+                                while (!completed.get() && (line = bufferedReader.readLine()) != null) {
+                                    if (line.startsWith("event:")) {
+                                        eventName = line.substring(6).trim();
+                                    } else if (line.startsWith("data:")) {
+                                        String dataLine = line.substring(5).trim();
+                                        if (!dataLine.trim().isEmpty()) {
+                                            dataBuilder.append(dataLine);
                                         }
+                                    } else if (line.trim().isEmpty()) {
+                                        String data = dataBuilder.toString().trim();
+                                        if (!data.isEmpty()) {
+                                            if ("[DONE]".equals(data)) {
+                                                log.info("🏁 收到DONE事件，流式传输完成");
+                                                sendIfActive(emitter, completed,
+                                                        SseEmitter.event().name("done").data("完成"));
+                                                break;
+                                            }
 
-                                        // 提取并保存会话ID（无论是否已有会话ID）
-                                        String conversationId = findAndSaveConversationId(finalUserId, eventName, data);
-                                        if (conversationId != null) {
-                                            // 将会话ID发送给前端
-                                            emitter.send(SseEmitter.event()
-                                                    .name("conversation_id")
-                                                    .data(conversationId));
-                                        }
+                                            String conversationId = findAndSaveConversationId(finalUserId, eventName, data);
+                                            if (conversationId != null) {
+                                                sendIfActive(emitter, completed,
+                                                        SseEmitter.event().name("conversation_id").data(conversationId));
+                                            }
 
-                                        // 提取回答内容（跳过conversation.chat.created事件）
-                                        if (!"conversation.chat.created".equals(eventName)) {
-                                            String answer = extractAnswerContent(data);
-                                            if (answer != null && !answer.isBlank()) {
-                                                String eventToUse = eventName != null ? eventName : "answer";
-                                                emitter.send(SseEmitter.event()
-                                                        .name(eventToUse)
-                                                        .data(answer));
+                                            if (!"conversation.chat.created".equals(eventName)) {
+                                                String answer = extractAnswerContent(data);
+                                                if (answer != null && !answer.isBlank()) {
+                                                    String eventToUse = eventName != null ? eventName : "answer";
+                                                    sendIfActive(emitter, completed,
+                                                            SseEmitter.event().name(eventToUse).data(answer));
+                                                }
                                             }
                                         }
+                                        dataBuilder.setLength(0);
+                                        eventName = null;
                                     }
-                                    dataBuilder.setLength(0);
-                                    eventName = null;
                                 }
+                            } catch (SocketException | InterruptedIOException e) {
+                                // 客户端断开连接 → 正常情况，不打印错误堆栈
+                                log.info("✅ 客户端已断开连接，流式输出正常结束");
+                            } catch (Exception e) {
+                                // 其他真正异常才打印
+                                log.error("❌ 读取流异常", e);
                             }
                         }
 
                     } catch (Exception e) {
                         log.error("❌ 处理SSE流时发生异常", e);
-                        try {
-                            emitter.send(SseEmitter.event().name("error").data("处理响应失败：" + e.getMessage()));
-                        } catch (Exception ex) {
-                            // 忽略发送错误
-                        }
-                        emitter.completeWithError(e);
+                        sendIfActive(emitter, completed,
+                                SseEmitter.event().name("error").data("处理响应失败：" + e.getMessage()));
+                        completeWithErrorIfActive(emitter, completed, e);
                     } finally {
-                        emitter.complete();
+                        completeIfActive(emitter, completed);
                         log.info("🏁【流式对话结束】");
                         log.info("=====================================");
                     }
@@ -434,12 +487,9 @@ public class CozeChatServiceImpl implements CozeChatService {
 
         } catch (Exception e) {
             log.error("❌ 流式对话异常", e);
-            try {
-                emitter.send(SseEmitter.event().name("error").data("系统异常：" + e.getMessage()));
-            } catch (Exception ex) {
-                // 忽略发送错误
-            }
-            emitter.completeWithError(e);
+            sendIfActive(emitter, completed,
+                    SseEmitter.event().name("error").data("系统异常：" + e.getMessage()));
+            completeWithErrorIfActive(emitter, completed, e);
         }
 
         return emitter;

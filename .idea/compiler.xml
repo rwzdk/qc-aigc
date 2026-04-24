@@ -7,34 +7,120 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="qc-social" />
-        <module name="qc-sms" />
+        <module name="jxaigc-module-auth" />
         <module name="qc-biz" />
+        <module name="jxaigc-common-satoken" />
         <module name="qc-common" />
         <module name="qc-oss" />
-        <module name="qc-gen" />
-        <module name="qc-push" />
-        <module name="qc-wechat" />
+        <module name="jxaigc-common-file-storage" />
+        <module name="jxaigc-common-base" />
+        <module name="jxaigc-api-public" />
         <module name="qc-system" />
-        <module name="qc-websocket" />
-        <module name="qc-job" />
-        <module name="qc-admin-api" />
+        <module name="jxaigc-starter-admin" />
+        <module name="jxaigc-starter-public" />
+        <module name="jxaigc-common-chat-protocol" />
         <module name="qc-audio" />
         <module name="qc-app-api" />
-        <module name="qc-aigc" />
-        <module name="qc-crypto" />
+        <module name="jxaigc-module-autoconfig" />
+        <module name="jxaigc-api-admin" />
         <module name="qc-message" />
-        <module name="qc-file" />
         <module name="qc-redis" />
+        <module name="jxaigc-module-system" />
         <module name="qc-mail" />
         <module name="qc-pay" />
         <module name="qc-auth" />
         <module name="qc-starter" />
+        <module name="jxaigc-common-captcha" />
         <module name="qc-web-api" />
+        <module name="jxaigc-module-ai" />
+        <module name="jxaigc-common-web" />
+        <module name="qc-social" />
+        <module name="jxaigc-module-log" />
+        <module name="qc-sms" />
+        <module name="jxaigc-api-mcp" />
+        <module name="jxaigc-common-ai" />
+        <module name="jxaigc-starter-all" />
+        <module name="jxaigc-module-job" />
+        <module name="qc-gen" />
+        <module name="jxaigc-common-options" />
+        <module name="qc-push" />
+        <module name="jxaigc-common-cache" />
+        <module name="qc-wechat" />
+        <module name="qc-websocket" />
+        <module name="qc-job" />
+        <module name="qc-admin-api" />
+        <module name="jxaigc-starter-codegen" />
+        <module name="qc-aigc" />
+        <module name="qc-crypto" />
+        <module name="qc-file" />
+        <module name="jxaigc-common-all" />
+        <module name="jxaigc-common-audio" />
+        <module name="jxaigc-starter-usercenter" />
+        <module name="jxaigc-api-usercenter" />
+        <module name="jxaigc-module-datacenter" />
         <module name="qc-db" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="aiflowy" target="17" />
+      <module name="aiflowy-api" target="17" />
+      <module name="aiflowy-api-admin" target="17" />
+      <module name="aiflowy-api-admin (2)" target="17" />
+      <module name="aiflowy-api-mcp" target="17" />
+      <module name="aiflowy-api-mcp (2)" target="17" />
+      <module name="aiflowy-api-public" target="17" />
+      <module name="aiflowy-api-public (2)" target="17" />
+      <module name="aiflowy-api-usercenter" target="17" />
+      <module name="aiflowy-api-usercenter (2)" target="17" />
+      <module name="aiflowy-common-ai" target="17" />
+      <module name="aiflowy-common-ai (2)" target="17" />
+      <module name="aiflowy-common-all" target="17" />
+      <module name="aiflowy-common-all (2)" target="17" />
+      <module name="aiflowy-common-audio" target="17" />
+      <module name="aiflowy-common-audio (2)" target="17" />
+      <module name="aiflowy-common-base" target="17" />
+      <module name="aiflowy-common-base (2)" target="17" />
+      <module name="aiflowy-common-cache" target="17" />
+      <module name="aiflowy-common-cache (2)" target="17" />
+      <module name="aiflowy-common-captcha" target="17" />
+      <module name="aiflowy-common-captcha (2)" target="17" />
+      <module name="aiflowy-common-chat-protocol" target="17" />
+      <module name="aiflowy-common-chat-protocol (2)" target="17" />
+      <module name="aiflowy-common-file-storage" target="17" />
+      <module name="aiflowy-common-file-storage (2)" target="17" />
+      <module name="aiflowy-common-options" target="17" />
+      <module name="aiflowy-common-options (2)" target="17" />
+      <module name="aiflowy-common-satoken" target="17" />
+      <module name="aiflowy-common-satoken (2)" target="17" />
+      <module name="aiflowy-common-web" target="17" />
+      <module name="aiflowy-common-web (2)" target="17" />
+      <module name="aiflowy-commons" target="17" />
+      <module name="aiflowy-module-ai" target="17" />
+      <module name="aiflowy-module-ai (2)" target="17" />
+      <module name="aiflowy-module-auth" target="17" />
+      <module name="aiflowy-module-auth (2)" target="17" />
+      <module name="aiflowy-module-autoconfig" target="17" />
+      <module name="aiflowy-module-autoconfig (2)" target="17" />
+      <module name="aiflowy-module-datacenter" target="17" />
+      <module name="aiflowy-module-datacenter (2)" target="17" />
+      <module name="aiflowy-module-job" target="17" />
+      <module name="aiflowy-module-job (2)" target="17" />
+      <module name="aiflowy-module-log" target="17" />
+      <module name="aiflowy-module-log (2)" target="17" />
+      <module name="aiflowy-module-system" target="17" />
+      <module name="aiflowy-module-system (2)" target="17" />
+      <module name="aiflowy-modules" target="17" />
+      <module name="aiflowy-starter" target="17" />
+      <module name="aiflowy-starter-admin" target="17" />
+      <module name="aiflowy-starter-admin (2)" target="17" />
+      <module name="aiflowy-starter-all" target="17" />
+      <module name="aiflowy-starter-all (2)" target="17" />
+      <module name="aiflowy-starter-codegen" target="17" />
+      <module name="aiflowy-starter-codegen (2)" target="17" />
+      <module name="aiflowy-starter-public" target="17" />
+      <module name="aiflowy-starter-public (2)" target="17" />
+      <module name="aiflowy-starter-usercenter" target="17" />
+      <module name="aiflowy-starter-usercenter (2)" target="17" />
       <module name="dashscope-audio" target="17" />
       <module name="dashscope-audio (1)" target="17" />
       <module name="mars-mall" target="17" />
@@ -45,8 +131,98 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="aiflowy" options="-parameters" />
+      <module name="aiflowy-api" options="-parameters" />
+      <module name="aiflowy-api-admin" options="-parameters" />
+      <module name="aiflowy-api-admin (2)" options="-parameters" />
+      <module name="aiflowy-api-mcp" options="-parameters" />
+      <module name="aiflowy-api-mcp (2)" options="-parameters" />
+      <module name="aiflowy-api-public" options="-parameters" />
+      <module name="aiflowy-api-public (2)" options="-parameters" />
+      <module name="aiflowy-api-usercenter" options="-parameters" />
+      <module name="aiflowy-api-usercenter (2)" options="-parameters" />
+      <module name="aiflowy-common-ai" options="-parameters" />
+      <module name="aiflowy-common-ai (2)" options="-parameters" />
+      <module name="aiflowy-common-all" options="-parameters" />
+      <module name="aiflowy-common-all (2)" options="-parameters" />
+      <module name="aiflowy-common-audio" options="-parameters" />
+      <module name="aiflowy-common-audio (2)" options="-parameters" />
+      <module name="aiflowy-common-base" options="-parameters" />
+      <module name="aiflowy-common-base (2)" options="-parameters" />
+      <module name="aiflowy-common-cache" options="-parameters" />
+      <module name="aiflowy-common-cache (2)" options="-parameters" />
+      <module name="aiflowy-common-captcha" options="-parameters" />
+      <module name="aiflowy-common-captcha (2)" options="-parameters" />
+      <module name="aiflowy-common-chat-protocol" options="-parameters" />
+      <module name="aiflowy-common-chat-protocol (2)" options="-parameters" />
+      <module name="aiflowy-common-file-storage" options="-parameters" />
+      <module name="aiflowy-common-file-storage (2)" options="-parameters" />
+      <module name="aiflowy-common-options" options="-parameters" />
+      <module name="aiflowy-common-options (2)" options="-parameters" />
+      <module name="aiflowy-common-satoken" options="-parameters" />
+      <module name="aiflowy-common-satoken (2)" options="-parameters" />
+      <module name="aiflowy-common-web" options="-parameters" />
+      <module name="aiflowy-common-web (2)" options="-parameters" />
+      <module name="aiflowy-commons" options="-parameters" />
+      <module name="aiflowy-module-ai" options="-parameters" />
+      <module name="aiflowy-module-ai (2)" options="-parameters" />
+      <module name="aiflowy-module-auth" options="-parameters" />
+      <module name="aiflowy-module-auth (2)" options="-parameters" />
+      <module name="aiflowy-module-autoconfig" options="-parameters" />
+      <module name="aiflowy-module-autoconfig (2)" options="-parameters" />
+      <module name="aiflowy-module-datacenter" options="-parameters" />
+      <module name="aiflowy-module-datacenter (2)" options="-parameters" />
+      <module name="aiflowy-module-job" options="-parameters" />
+      <module name="aiflowy-module-job (2)" options="-parameters" />
+      <module name="aiflowy-module-log" options="-parameters" />
+      <module name="aiflowy-module-log (2)" options="-parameters" />
+      <module name="aiflowy-module-system" options="-parameters" />
+      <module name="aiflowy-module-system (2)" options="-parameters" />
+      <module name="aiflowy-modules" options="-parameters" />
+      <module name="aiflowy-starter" options="-parameters" />
+      <module name="aiflowy-starter-admin" options="-parameters" />
+      <module name="aiflowy-starter-admin (2)" options="-parameters" />
+      <module name="aiflowy-starter-all" options="-parameters" />
+      <module name="aiflowy-starter-all (2)" options="-parameters" />
+      <module name="aiflowy-starter-codegen" options="-parameters" />
+      <module name="aiflowy-starter-codegen (2)" options="-parameters" />
+      <module name="aiflowy-starter-public" options="-parameters" />
+      <module name="aiflowy-starter-public (2)" options="-parameters" />
+      <module name="aiflowy-starter-usercenter" options="-parameters" />
+      <module name="aiflowy-starter-usercenter (2)" options="-parameters" />
       <module name="dashscope-audio" options="-parameters" />
       <module name="dashscope-audio (1)" options="-parameters" />
+      <module name="jxaigc-api" options="-parameters" />
+      <module name="jxaigc-api-admin" options="-parameters" />
+      <module name="jxaigc-api-mcp" options="-parameters" />
+      <module name="jxaigc-api-public" options="-parameters" />
+      <module name="jxaigc-api-usercenter" options="-parameters" />
+      <module name="jxaigc-common-ai" options="-parameters" />
+      <module name="jxaigc-common-all" options="-parameters" />
+      <module name="jxaigc-common-audio" options="-parameters" />
+      <module name="jxaigc-common-base" options="-parameters" />
+      <module name="jxaigc-common-cache" options="-parameters" />
+      <module name="jxaigc-common-captcha" options="-parameters" />
+      <module name="jxaigc-common-chat-protocol" options="-parameters" />
+      <module name="jxaigc-common-file-storage" options="-parameters" />
+      <module name="jxaigc-common-options" options="-parameters" />
+      <module name="jxaigc-common-satoken" options="-parameters" />
+      <module name="jxaigc-common-web" options="-parameters" />
+      <module name="jxaigc-commons" options="-parameters" />
+      <module name="jxaigc-module-ai" options="-parameters" />
+      <module name="jxaigc-module-auth" options="-parameters" />
+      <module name="jxaigc-module-autoconfig" options="-parameters" />
+      <module name="jxaigc-module-datacenter" options="-parameters" />
+      <module name="jxaigc-module-job" options="-parameters" />
+      <module name="jxaigc-module-log" options="-parameters" />
+      <module name="jxaigc-module-system" options="-parameters" />
+      <module name="jxaigc-modules" options="-parameters" />
+      <module name="jxaigc-starter" options="-parameters" />
+      <module name="jxaigc-starter-admin" options="-parameters" />
+      <module name="jxaigc-starter-all" options="-parameters" />
+      <module name="jxaigc-starter-codegen" options="-parameters" />
+      <module name="jxaigc-starter-public" options="-parameters" />
+      <module name="jxaigc-starter-usercenter" options="-parameters" />
       <module name="mars-admin" options="-parameters" />
       <module name="mars-mall" options="-parameters" />
       <module name="mars-test" options="-parameters" />
@@ -66,6 +242,7 @@
       <module name="qc-gen" options="-parameters" />
       <module name="qc-infra" options="-parameters" />
       <module name="qc-job" options="-parameters" />
+      <module name="qc-jxaigc" options="-parameters" />
       <module name="qc-mail" options="-parameters" />
       <module name="qc-message" options="-parameters" />
       <module name="qc-oss" options="-parameters" />

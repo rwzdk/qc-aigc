@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Mars Admin 启动类
+ * Admin 启动类
  */
 @SpringBootApplication
 @EnableScheduling
