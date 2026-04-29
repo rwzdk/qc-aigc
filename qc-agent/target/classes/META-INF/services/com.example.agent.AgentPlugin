@@ -1,0 +1,3 @@
+com.example.agent.plugins.EchoAgent
+com.example.agent.plugins.SummaryAgent
+com.example.agent.plugins.AuditAgent

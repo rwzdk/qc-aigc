@@ -1,0 +1,17 @@
+com\example\agent\plugins\AuditAgent.class
+com\example\agent\ConsoleAuditLog.class
+com\example\agent\plugins\SummaryAgent.class
+com\example\agent\strategy\FixedRouteStrategy.class
+com\example\agent\InMemoryCache.class
+com\example\agent\strategy\FallbackStrategy.class
+com\example\agent\AgentResult.class
+com\example\agent\strategy\Strategy.class
+com\example\agent\DemoApp.class
+com\example\agent\CacheStore.class
+com\example\agent\plugins\EchoAgent.class
+com\example\agent\AgentPlugin.class
+com\example\agent\AgentPipeline.class
+com\example\agent\PluginRegistry.class
+com\example\agent\AuditLog.class
+com\example\agent\AgentContext.class
+com\example\agent\strategy\StrategyFactory.class
