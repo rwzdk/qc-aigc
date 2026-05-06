@@ -22,3 +22,42 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Maven
+**/target/
+
+# Test reports
+**/surefire-reports/
+**/*.dumpstream
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local uploads / generated content
+uploads/
+**/src/main/resources/gen/
+**/src/main/resources/stt/*.pcm
+
+# Local PDF chat cache (generated)
+chat-pdf.json
+chat-pdf.properties
+**/chat-pdf.json
+**/chat-pdf.properties
+
+# Build artifacts
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+*.jar.original
