@@ -1,0 +1,8 @@
+com\qc\gen\service\GenTableService.class
+com\qc\gen\mapper\GenTableMapper.class
+com\qc\gen\service\impl\GenTableServiceImpl.class
+com\qc\gen\mapper\GenTableColumnMapper.class
+com\qc\gen\entity\DatabaseTable.class
+com\qc\gen\entity\GenTable.class
+com\qc\gen\entity\DatabaseColumn.class
+com\qc\gen\entity\GenTableColumn.class

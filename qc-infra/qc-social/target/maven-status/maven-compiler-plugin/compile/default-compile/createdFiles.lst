@@ -1,0 +1,7 @@
+com\qc\social\impl\AlipayLogin.class
+com\qc\social\SocialLoginService$SocialUserInfo.class
+com\qc\social\SocialLoginService.class
+com\qc\social\impl\WechatMiniSocialLogin.class
+com\qc\social\impl\WechatMpSocialLogin.class
+com\qc\social\impl\AppleLogin.class
+com\qc\social\SocialLoginFactory.class

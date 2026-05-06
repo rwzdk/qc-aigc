@@ -1,0 +1,15 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: qc-audio
+  ai:
+    dashscope:
+      api-key: sk-0be8343135b24c6e85cd5907f65fdb7c
+
+audio:
+  ffmpeg:
+    path: "D:/ffmpeg/ffmpeg-8.1-essentials_build/bin/ffmpeg.exe"
+  ffprobe:
+    path: "D:/ffmpeg/ffmpeg-8.1-essentials_build/bin/ffprobe.exe"

@@ -1,0 +1,12 @@
+com\qc\auth\LoginStrategyFactory.class
+com\qc\auth\LoginHelper$RequestInfo.class
+com\qc\auth\LoginResult.class
+com\qc\auth\strategy\PasswordLoginStrategy.class
+com\qc\auth\LoginHelper.class
+com\qc\auth\LoginRequest.class
+com\qc\auth\LoginStrategy.class
+com\qc\auth\enums\ClientType.class
+com\qc\auth\enums\LoginType.class
+com\qc\auth\strategy\MiniProgramLoginStrategy.class
+com\qc\auth\strategy\SmsCodeLoginStrategy.class
+com\qc\auth\strategy\SocialLoginStrategy.class

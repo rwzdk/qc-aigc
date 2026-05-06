@@ -1,0 +1,5 @@
+com\qc\system\mapper\StudentMapper.class
+com\qc\system\controller\StudentController.class
+com\qc\system\service\impl\StudentServiceImpl.class
+com\qc\system\service\StudentService.class
+com\qc\system\entity\Student.class

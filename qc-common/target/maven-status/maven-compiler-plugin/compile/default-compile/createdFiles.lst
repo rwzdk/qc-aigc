@@ -1,0 +1,8 @@
+com\qc\common\entity\BaseEntity.class
+com\qc\common\exception\BusinessException.class
+com\qc\common\annotation\DataScope.class
+com\qc\common\config\JacksonConfig.class
+com\qc\common\result\Result.class
+com\qc\common\util\RsaUtils.class
+com\qc\common\result\PageResult.class
+com\qc\common\exception\GlobalExceptionHandler.class

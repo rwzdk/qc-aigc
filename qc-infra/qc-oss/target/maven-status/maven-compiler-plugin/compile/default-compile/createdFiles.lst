@@ -1,0 +1,6 @@
+com\qc\oss\LocalFileStorage.class
+com\qc\oss\TencentCosFileStorage.class
+com\qc\oss\AliyunOssFileStorage.class
+com\qc\oss\RustFsFileStorage.class
+com\qc\oss\MinioFileStorage.class
+com\qc\oss\FileStorage.class

@@ -1,0 +1,5 @@
+com\qc\pay\PayServiceFactory.class
+com\qc\pay\AbstractPayService.class
+com\qc\pay\WechatPayService.class
+com\qc\pay\AlipayService.class
+com\qc\pay\PayService.class

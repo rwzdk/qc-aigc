@@ -1,0 +1,8 @@
+com\qc\file\service\impl\SysFileGroupServiceImpl.class
+com\qc\file\entity\SysFile.class
+com\qc\file\service\impl\SysFileServiceImpl.class
+com\qc\file\mapper\SysFileGroupMapper.class
+com\qc\file\entity\SysFileGroup.class
+com\qc\file\service\SysFileService.class
+com\qc\file\mapper\SysFileMapper.class
+com\qc\file\service\SysFileGroupService.class

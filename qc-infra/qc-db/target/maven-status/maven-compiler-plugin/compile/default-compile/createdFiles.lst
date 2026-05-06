@@ -1,0 +1,3 @@
+com\qc\db\interceptor\DataPermissionInterceptor.class
+com\qc\db\config\AsyncConfig.class
+com\qc\db\config\MybatisPlusConfig.class
